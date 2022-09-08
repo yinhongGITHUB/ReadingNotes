@@ -1,4 +1,4 @@
-# ReadingnNotes
+# ReadingNotes
 
 PleaseLetMe的读书笔记（持续更新中）。
 
