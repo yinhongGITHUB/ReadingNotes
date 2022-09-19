@@ -24,7 +24,7 @@ LiveScript ->JavaScript and ECMAScript规范
 
 ###### 1.分支结构：
 
-![image-20220705155030568](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20220705155030568.png)
+![image-20220705155030568](https://github.com/yinhongGITHUB/ReadingNotes/blob/main/images/ModernJSTutorial/image-20220705155030568.png)
 
 ###### 2.行的长度：
 
