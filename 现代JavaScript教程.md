@@ -358,7 +358,31 @@ alert( arr ); // 1,2,3,4,5
 // 负几就是尾端的前几位，很容易注意到，splice是没有办法直接再最后一位之后添加元素的
 ```
 
+##### concat
 
+如果**类数组**对象具有 `Symbol.isConcatSpreadable` 属性，那么它就会被 `concat` 当作一个数组来处理：此对象中的元素将被添加
+
+```js
+let arr = [1, 2];
+
+let arrayLike = {
+  0: "something",
+  1: "else",
+  [Symbol.isConcatSpreadable]: true,
+  length: 2
+};
+
+alert( arr.concat(arrayLike) ); // 1,2,something,else
+```
+
+##### includes可以处理NaN
+
+```js
+const arr = [NaN];
+alert( arr.indexOf(NaN) ); // -1（错，应该为 0）
+alert( arr.includes(NaN) );// true（正确）
+// 这是因为 includes 是在比较晚的时候才被添加到 JavaScript 中的，并且在内部使用了更新了的比较算法。
+```
 
 
 
