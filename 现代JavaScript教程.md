@@ -1,6 +1,6 @@
 
 ##### 书本类型：电子书
-##### 书本链接：https://zh.javascript.info/array-methods
+##### 书本链接：https://zh.javascript.info
 
 ##### 进化史：
 
