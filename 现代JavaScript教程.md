@@ -386,6 +386,116 @@ alert( arr.includes(NaN) );// true（正确）
 // 这是因为 includes 是在比较晚的时候才被添加到 JavaScript 中的，并且在内部使用了更新了的比较算法。
 ```
 
+##### sort
+
+sort默认将数组中的值变成字符串，然后用他们的UTF-16 进行比较，例如：
+
+```js
+let arr = [ 1, 2, 15 ];
+
+// 该方法重新排列 arr 的内容
+arr.sort();
+
+alert( arr );  // 1, 15, 2
+// 因为 "2" > "15" 所以2会排在15后面
+// 想要解决这个问题
+arr.sort( (a, b)=> a - b ) 
+// a、b是两个相邻的项
+// 回调函数返回值为正数时，a、b互换。为0时，a、b不动。为负数时，a、b不动
+```
+
+##### localeCompare
+
+比较两个字符串的大小，可配合上面的sort使用
+
+```js
+let countries = ['Österreich', 'Andorra', 'Vietnam']; 
+countries.sort( (a, b) => a.localeCompare(b)
+// 前提，字符串对象下面才有这个方法，用于比较两个字符串的大小
+```
+
+##### 可迭代的对象的关键
+
+1. Symbol.iterator：迭代器，
+
+2. next()方法
+
+```js
+// 写法一     
+let obj = {
+        from: 1,
+        to: 5,
+        // 迭代器 
+        [Symbol.iterator]() {
+          this.current = this.from;
+          return this;
+        },
+		// 下一步	
+        // next() 方法返回的结果的格式必须是 {done: Boolean, value: any}，当 done=true 时，表示循环结束，否则 value 是下一个值
+        next() {
+          if (this.current <= this.to) {
+            return { done: false, value: this.current++ };
+          } else {
+            return { done: true };
+          }
+        },
+      };
+
+      for (let key of obj) {
+        console.log(key);// 1,2,3,4,5
+      }
+// 写法二（推荐⭐）
+let range = {
+    from:1,
+    to:5,
+}
+// 给range加一个迭代器，迭代器可以让当前对象变成一个可枚举的对象
+range[Symbol.iterator] = function(){
+    return {
+        current: this.from,
+        last: this.to,
+        next:function(){
+            if(this.current <= this.last){
+                return {
+                    done:false,
+                	value:this.current++,
+                }
+            }else{
+                return {
+                    done:true
+                }
+            }
+        }
+    }
+}
+
+      for (let key of range) {
+        console.log(key);// 1,2,3,4,5
+      }
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
