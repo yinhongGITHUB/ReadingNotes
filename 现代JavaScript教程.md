@@ -496,7 +496,7 @@ map[key]
 // 此时map数据结构如下，可以明显看到，set设置的元素和直接map[key]设置的元素是完全不同的，所以不可能互通拿取（互通拿取定义：set设置的元素，map[key]获取不到）
 ```
 
-![image-20220926105518658](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20220926105518658.png)
+![image-20220926105518658](https://github.com/yinhongGITHUB/ReadingNotes/blob/main/images/ModernJSTutorial/image-20220926105518658.png)
 
 
 
