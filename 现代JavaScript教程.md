@@ -478,8 +478,10 @@ range[Symbol.iterator] = function(){
 
 ##### 关于Map你不知道的事情
 
+###### 1.map获取数据的两种方式
+
 ```js
-// map获取数据的两种方式
+
 // 第一种
 map.get(key)
 // 第二种,这样会将该map视为JavaScript的plain object，因此它暗含了所有相应的限制（仅支持string/symbol）而且，map[key]获取不到正常设置的map元素，例子如下：
@@ -498,15 +500,35 @@ map[key]
 
 ![image-20220926105518658](https://github.com/yinhongGITHUB/ReadingNotes/blob/main/images/ModernJSTutorial/image-20220926105518658.png)
 
+###### 2.Map的key可以是对象以及任意类型，既然如此，`Map` 是怎么比较键的？
 
+`Map` 使用 [SameValueZero](https://tc39.github.io/ecma262/#sec-samevaluezero) 算法来比较键是否相等。它和严格等于 `===` 差不多，但区别是 `NaN` 被看成是等于 `NaN`。所以 `NaN` 也可以被用作键。
 
+这个算法不能被改变或者自定义。
 
+###### 3.**链式调用**
 
+每一次 `map.set` 调用都会返回 map 本身，所以我们可以进行“链式”调用：
 
+```javascript
+map.set('1', 'str1')
+  .set(1, 'num1')
+  .set(true, 'bool1');
+```
 
+###### 3.关于map如何迭代
 
+```js
+map.keys() —— 遍历并返回一个包含所有键的可迭代对象，
+map.values() —— 遍历并返回一个包含所有值的可迭代对象，
+map.entries() —— 遍历并返回一个包含所有实体 [key, value] 的可迭代对象，for..of 在默认情况下使用的就是这个。
+```
 
+注意：迭代的顺序与插入值的顺序相同
 
+##### set注意事项
+
+set是没有 “ 键 ” 的，只有值，并且，每个值只能出现一次。
 
 
 
