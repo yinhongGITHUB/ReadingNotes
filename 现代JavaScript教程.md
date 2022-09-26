@@ -530,7 +530,32 @@ map.entries() —— 遍历并返回一个包含所有实体 [key, value] 的可
 
 set是没有 “ 键 ” 的，只有值，并且，每个值只能出现一次。
 
+##### Array.from注意事项
 
+```js
+ var obj = new Object({
+        name: "web_sea",
+        age: 18,
+        isRich: [false, true],
+      });
+      //将对象转成数组
+      var objs = [];
+      for (var i in obj) {
+        objs.push(obj[i]);
+      }
+
+      var arrObj = Array.from(objs);
+      console.log("objs:", objs); //objs: [ 'web_sea', 18, [false,true] ]
+      console.log("arrObj:", arrObj); //arrObj:[ 'web_sea', 18, [false,true] ]
+      //我们要改变objs子对象的值；
+      objs[2][0] = "哈哈哈哈";
+      //改变第一层数据的值
+      objs[1] = 50;
+      console.log("改变objs后objs:", objs); //[ 'web_sea', 50, [ true, true ] ]
+      console.log("改变objs后arrObj:", arrObj); //arrObj:[ 'web_sea', 18, [ true, true ] ]
+```
+
+结论：Array.from的子对象是浅拷贝，所以，Array.from是浅拷贝，但是Array.from的第一层还是深拷贝的，这点要注意哦
 
 
 
