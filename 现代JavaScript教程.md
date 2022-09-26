@@ -364,6 +364,8 @@ alert( arr ); // 1,2,3,4,5
 
 如果**类数组**对象具有 `Symbol.isConcatSpreadable` 属性，那么它就会被 `concat` 当作一个数组来处理：此对象中的元素将被添加
 
+注：concat不会改变原数组，不管是下方的arr或者arrayLike，而是返回一个新数组
+
 ```js
 let arr = [1, 2];
 
@@ -474,7 +476,27 @@ range[Symbol.iterator] = function(){
       }
 ```
 
+##### 关于Map你不知道的事情
 
+```js
+// map获取数据的两种方式
+// 第一种
+map.get(key)
+// 第二种,这样会将该map视为JavaScript的plain object，因此它暗含了所有相应的限制（仅支持string/symbol）而且，map[key]获取不到正常设置的map元素，例子如下：
+map[key]
+    let a = new Map([
+        ["name", "张三"],
+        [21, "李四"],
+      ]);
+
+      console.log(a.get("name"));
+      let key = "name";
+      a[key] = 2;
+      console.log(a[key]);
+// 此时map数据结构如下，可以明显看到，set设置的元素和直接map[key]设置的元素是完全不同的，所以不可能互通拿取（互通拿取定义：set设置的元素，map[key]获取不到）
+```
+
+![image-20220926105518658](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20220926105518658.png)
 
 
 
