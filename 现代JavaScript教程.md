@@ -557,19 +557,97 @@ set是没有 “ 键 ” 的，只有值，并且，每个值只能出现一次�
 
 结论：Array.from的子对象是浅拷贝，所以，Array.from是浅拷贝，但是Array.from的第一层还是深拷贝的，这点要注意哦
 
+##### WeakMap注意事项
 
+1. ###### WeakMap的key**只能是**对象，而且这个key已经会被垃圾回收机制回收，但是map的key，只要存了，就不会丢失。如下：
 
+```js
+// 1. weakMap的key只能是对象
+let weakMap = new WeakMap();
 
+let obj = {};
 
+weakMap.set(obj, "ok"); // 正常工作（以对象作为键）
 
+// 不能使用字符串作为键
+weakMap.set("test", "Whoops"); // Error，因为 "test" 不是一个对象
+let john = { name: "John" };
 
+// 2. weakMap的key就算存储了值，也已经会被垃圾回收机制回收内存
+let weakMap = new WeakMap();
+weakMap.set(john, "...");
 
+john = null; // 覆盖引用
 
+// john 被从内存中删除了！
+// 注意： 如果 john 消失，"..." 将会被自动清除
+```
 
+2. ###### WeakMap有如下方法，暂不支持获取WeakMap的所有键/值的方法
 
+```js
+weakMap.get(key)
+weakMap.set(key, value)
+weakMap.delete(key)
+weakMap.has(key)
+```
 
+3. ###### 使用场景
 
+使用场景一：
 
+例如，我们有用于处理用户访问计数的代码。收集到的信息被存储在 map 中：一个用户对象作为键，其访问次数为值。当一个用户离开时（该用户对象将被垃圾回收机制回收），这时我们就不再需要他的访问次数了。
+
+下面是一个使用 `Map` 的计数函数的例子：
+
+```js
+// 📁 visitsCount.js
+let visitsCountMap = new Map(); // map: user => visits count
+
+// 递增用户来访次数
+function countUser(user) {
+  let count = visitsCountMap.get(user) || 0;
+  visitsCountMap.set(user, count + 1);
+}
+// 📁 main.js
+let john = { name: "John" };
+
+countUser(john); // count his visits
+
+// 不久之后，john 离开了
+john = null;
+```
+
+现在，`john` 这个对象应该被垃圾回收，但它仍在内存中，因为它是 `visitsCountMap` 中的一个键。
+
+当我们移除用户时，我们需要清理 `visitsCountMap`，否则它将在内存中无限增大。在复杂的架构中，这种清理会成为一项繁重的任务。
+
+我们可以通过使用 `WeakMap` 来避免这样的问题：
+
+```js
+// 📁 visitsCount.js
+let visitsCountMap = new WeakMap(); // weakmap: user => visits count
+
+// 递增用户来访次数
+function countUser(user) {
+  let count = visitsCountMap.get(user) || 0;
+  visitsCountMap.set(user, count + 1);
+}
+```
+
+总结：WeakMap和Map的区别就是，WeakMap不需要手动去清楚，避免了很多麻烦，当john离开时，利用垃圾清除机制，自动清楚了该条数据。
+
+##### WeakSet注意事项
+
+WeakSet跟WeakMap的特性差不多，也是只能添加对象
+
+##### WeakMap/WeakSet大总结
+
+`WeakMap/WeakSet` 完成其主要工作 —— 为在其它地方存储/管理的对象数据提供“额外”存储。即额外存储的数据会随着对象的消失而消失。
+
+`WeakMap` 是类似于 `Map` 的集合，它仅允许对象作为键，并且一旦通过其他方式无法访问这些对象，垃圾回收便会将这些对象与其关联值一同删除。
+
+`WeakSet` 是类似于 `Set` 的集合，它仅存储对象，并且一旦通过其他方式无法访问这些对象，垃圾回收便会将这些对象删除。
 
 
 
