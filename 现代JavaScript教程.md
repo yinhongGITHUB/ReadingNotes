@@ -649,6 +649,87 @@ WeakSet跟WeakMap的特性差不多，也是只能添加对象
 
 `WeakSet` 是类似于 `Set` 的集合，它仅存储对象，并且一旦通过其他方式无法访问这些对象，垃圾回收便会将这些对象删除。
 
+#####  对象结构赋值时注意点
+
+###### 1.当解构时和let不在一行时，防止被当成代码块解析
+
+```js
+let title, width, height;
+
+// 这一行发生了错误
+{title, width, height} = {title: "Menu", width: 200, height: 100};
+// 报错原因：
+// js把 “ 主代码流 ” 的{}当作一个代码块，而不是一个结构赋值语句，就会报错
+// 解决办法如下：用括号括起来就可以了
+({title, width, height} = {title: "Menu", width: 200, height: 100});
+```
+
+###### 2.解构赋值再函数参数上的妙用
+
+```js
+// 这样在调用函数时，首先参数对象成了非必填项，当所有参数都用默认值时，可以直接调用而不用传入空对象
+// 然后从空对象上面进行解构赋值的属性都给予了默认值
+function showMenu({ title = "Menu", width = 100, height = 200 } = {}) {
+  alert( `${title} ${width} ${height}` );
+}
+
+showMenu();
+```
+
+##### 基准测试的定义
+
+这种性能测量通常称为“基准测试（benchmark）”。
+
+比如计算两个同样功能的函数哪个更快
+
+##### JSON.stringify的三个参数
+
+第一个参数：需要转编码的值
+
+第二个参数：一个函数或一个数组，两个参数，(key,value)=>{} key就是对象的key，value就是对象的value，可以设置哪些属性被转化成JSON字符串。数组的话就是字符串数组，包括哪些属性被转化成JSON字符串的key。
+
+第三个参数：格式化空格的数量（即JSON字符串会换行，每行前面有几个空格呢？就是这里设置的）
+
+注意：跟JSON.parse不同，第二个参数函数，就是设置哪些属性进返回结果的，所以直接判断哪些熟悉可以进结果。
+
+```js
+let meetup = {
+      title: "Conference",
+      participants: [{ name: "John" }, { name: "Alice" }],
+    };
+
+console.log(
+  JSON.stringify(meetup, function replacer(key, value) {
+     return key == "title" ? undefined : value;
+  })
+); 
+```
+
+
+
+##### JSON.parse的两个参数
+
+第一个参数：需要转编码的值。
+
+第二个参数：一个函数,两个参数，(key,value)=>{} key就是对象的key，value就是对象的value，可以设置哪些属性返回什么哪些不返回。
+
+注意：函数必须有  return value;不然会是undefined。
+
+```js
+     let str = '{"title":"Conference","date":"2017-11-30T12:00:00.000Z"}';
+
+      let meetup = JSON.parse(str, function (key, value) {
+        if (key == "date") return undefined;
+        return value;
+      });
+
+      console.log(meetup);
+```
+
+
+
+
+
 
 
 
