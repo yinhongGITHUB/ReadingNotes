@@ -801,6 +801,44 @@ console.log(a) // 1
 
 （注意：function声明的函数也会挂载到全局对象上）
 
+##### 函数对象
+
+每个函数其实都是一个对象
+
+###### 内建属性name（它返回的是字符串类型的函数名）
+
+```js
+function test(){
+    
+}
+let test = function() {
+    
+}
+console.log(test.name)// test 每个函数其实都是一个对象，对象下面有个name属性，其实就是函数名（注意： 名字是string类型）
+```
+
+但有时，也会出现引擎无法推测名字的情况
+
+```js
+// 函数是在数组中创建的
+let arr = [function() {}];
+
+alert( arr[0].name ); // <空字符串>
+// 引擎无法设置正确的名字，所以没有值
+```
+
+###### 内建属性length（它返回函数入参的个数）
+
+```js
+function f1(a) {}
+function f2(a, b) {}
+function many(a, b, ...more) {}
+
+alert(f1.length); // 1
+alert(f2.length); // 2
+alert(many.length); // 2
+```
+
 
 
 
