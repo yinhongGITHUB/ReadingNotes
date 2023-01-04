@@ -839,6 +839,135 @@ alert(f2.length); // 2
 alert(many.length); // 2
 ```
 
+**pointer-events**
+
+pointer-events 属性是一个指针属性，是用于控制在什么条件下特定的图形元素可以成为指针事件的目标。pointer-events 属性有很多值，但是对于浏览器来说，适用于 **HTML** 元素的只有三个值，其它的几个值都是针对 **SVG** 元素的
+
+```js
+1. none：该元素永远不会成为鼠标事件的 target。但是，当其后代元素的 pointer-events 属性指定其他值时，鼠标事件可以指向后代元素，在这种情况下，鼠标事件将在捕获或冒泡阶段触发父元素的事件侦听器 (鼠标的动作将不能被该元素及其子元素所捕获，但是能够被其父元素所捕获)。
+2. auto：默认值，表示指针事件已启用；此时元素会响应指针事件，阻止这些事件在其下面的元素上触发。对于 SVG 内容，该值与 visiblePainted 效果相同。
+3. inherit：将使用 pointer-events 元素的父级的值。
+```
+
+##### 自定义属性
+
+```js
+function sayHi() {
+  alert("Hi");
+
+  // 计算调用次数
+  sayHi.counter++;
+}
+sayHi.counter = 0; // 初始值
+
+sayHi(); // Hi
+sayHi(); // Hi
+
+alert( `Called ${sayHi.counter} times` ); // Called 2 times
+/*
+被赋值给函数的属性，比如 sayHi.counter = 0，不会 在函数内定义一个局部变量 counter。换句话说，属性 counter 和变量 let counter 是毫不相关的两个东西。
+我们可以把函数当作对象，在它里面存储属性，但是这对它的执行没有任何影响。变量不是函数属性，反之亦然。它们之间是平行的。
+*/
+```
+
+##### 命名函数表达式
+
+```js
+/*
+关于名字 func 有两个特殊的地方，这就是添加它的原因：
+
+它允许函数在内部引用自己。
+它在函数外是不可见的。
+
+添加func的好处是：防止sayHi被外部代码改变 或者 出现变量重名的情况导致sayHi 无法正常工作
+*/
+let sayHi = function func(who) {
+  if (who) {
+    alert(`Hello, ${who}`);
+  } else {
+    func("Guest"); // 使用 func 再次调用函数自身或者 sayHi('test')调用自身都可以
+  }
+};
+
+sayHi(); // Hello, Guest
+
+// 但这不工作：
+func(); // Error, func is not defined（在函数外不可见）
+```
+
+##### 关于alert()与console.log()对于toString的自调用
+
+###### **[1]alert()**
+
+  [1.1]有阻塞作用，不点击确定，后续代码无法继续执行
+
+  [1.2]alert()只能输出string,如果alert输出的是对象会自动调用toString()方法
+
+​    e.g. alert([1,2,3]);//'1,2,3'
+
+  [1.3]alert不支持多个参数的写法,只能输出第一个值
+
+​    e.g. alert(1,2,3);//1
+
+###### **[2]console.log()**
+
+  [2.1]在打印台输出
+
+  [2.2]可以打印任何类型的数据  注意：其实console.log也会自动调用toString()方法
+
+​    e.g. console.log([1,2,3]);//[1,2,3]
+
+  [2.3]支持多个参数的写法
+
+​    e.g. console.log(1,2,3)// 1 2 3  
+
+##### “ new Function ”语法
+
+通过字符串来创建函数
+
+```js
+eg:
+let sum = new Function('a', 'b', 'return a + b');
+alert( sum(1, 2) ); // 3
+
+eg:
+let sayHi = new Function('alert("Hello")');
+sayHi(); // Hello
+
+// 使用场景：
+let str = ... 动态地接收来自服务器的代码 ...
+let func = new Function(str);
+func();
+
+```
+
+注意： new Function所声明的函数其this指向全局环境，并**不指向**当前的词法环境
+
+```js
+function getFunc() {
+  let value = "test";
+
+  let func = new Function('alert(value)');
+
+  return func;
+}
+
+getFunc()(); // error: value is not defined   无法访问到当前词法作用域的局部变量
+
+// 但是下方这样是可以的
+  let value = "test";
+  let func = new Function('alert(value)');
+// 可以访问到全局环境下定义的全局变量
+```
+
+##### 调度：setTimeout 和 setInterval（待续）
+
+
+
+
+
+
+
 
 
 
