@@ -960,15 +960,50 @@ getFunc()(); // error: value is not defined   无法访问到当前词法作用�
 // 可以访问到全局环境下定义的全局变量
 ```
 
-##### 调度：setTimeout 和 setInterval（待续）
+##### 调度：setTimeout 和 setInterval
+
+###### **嵌套的 `setTimeout` 相较于 `setInterval` 能够更精确地设置两次执行之间的延时。**
+
+setInterval 
+
+```js
+eg:
+let i = 1;
+setInterval(function() {
+  func(i++);
+}, 100);
+
+执行间隔为：100毫秒  或者  func执行的时间（出现的情况就是 func执行时间大于100毫秒时出现）
+
+原因：
+因为 func 的执行所花费的时间“消耗”了一部分间隔时间
+也可能出现这种情况，就是 func 的执行所花费的时间比我们预期的时间更长，并且超出了 100 毫秒。
+在这种情况下，JavaScript 引擎会等待 func 执行完成，然后检查调度程序，如果时间到了，则 立即 再次执行它。
+极端情况下，如果函数每次执行时间都超过 delay 设置的时间，那么每次调用之间将完全没有停顿。
+
+```
+
+setTimeout
+
+```js
+eg:
+let i = 1;
+setTimeout(function run() {
+  func(i++);
+  setTimeout(run, 100);
+}, 100);
+执行间隔为：func本身执行时间 + 100毫秒
+```
+
+值得注意的是：**零延时实际上不为零****（在浏览器中）**
+
+```js
+eg: setTimeout(func, 0)
+```
 
 
 
-
-
-
-
-
+在浏览器环境下，嵌套定时器的运行频率是受限制的。根据 [HTML5 标准](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers) 所讲：“经过 5 重嵌套定时器之后，时间间隔被强制设定为至少 4 毫秒”。
 
 
 
