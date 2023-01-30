@@ -1001,9 +1001,71 @@ setTimeout(function run() {
 eg: setTimeout(func, 0)
 ```
 
-
-
 在浏览器环境下，嵌套定时器的运行频率是受限制的。根据 [HTML5 标准](https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers) 所讲：“经过 5 重嵌套定时器之后，时间间隔被强制设定为至少 4 毫秒”。
+
+##### 对象的属性标志
+
+```js
+value - 当前属性的值
+writable — 如果为 true，则值可以被修改，否则它是只可读的。
+enumerable — 如果为 true，则会被在循环中列出，否则不会被列出。
+configurable — 如果为 true，则此属性可以被删除，这些特性也可以被修改，否则不可以。
+    *注意，当configurable为false时，上面三个属性标志都不能修改*
+```
+
+Object.getOwnPropertyDescriptor(obj, propertyName)可以查询对象的某个属性的/*详细信息/*
+
+**obj** 需要从中获取信息的对象
+
+**propertyName **属性的名称
+
+```js
+let user = {
+  name: "John"
+};
+
+let descriptor = Object.getOwnPropertyDescriptor(user, 'name');
+
+alert( JSON.stringify(descriptor, null, 2 ) );
+/* 属性描述符：
+{
+  "value": "John",
+  "writable": true,
+  "enumerable": true,
+  "configurable": true
+}
+*/
+```
+
+Object.defineProperty(obj, propertyName, descriptor) 可以设置对象的某个属性需要应用的描述符
+
+**obj** , **propertyName** 要应用描述符的对象及其属性。
+
+**descriptor** 要应用的属性描述符对象。
+
+```js
+let user = {};
+
+Object.defineProperty(user, "name", {
+  value: "John"
+});
+
+let descriptor = Object.getOwnPropertyDescriptor(user, 'name');
+
+alert( JSON.stringify(descriptor, null, 2 ) );
+/*
+{
+  "value": "John",
+  "writable": false,
+  "enumerable": false,
+  "configurable": false
+}
+ */
+```
+
+注意：在使用Object.defineProperty时，第三个参数 描述符对象。空对象就默认那三个**属性标志**为false，value为undefined
+
+
 
 
 
