@@ -1065,6 +1065,69 @@ alert( JSON.stringify(descriptor, null, 2 ) );
 
 注意：在使用Object.defineProperty时，第三个参数 描述符对象。空对象就默认那三个**属性标志**为false，value为undefined
 
+##### 对象的访问器属性 - getter 和 setter
+
+```js
+let user = {
+  name: "John",
+  surname: "Smith",
+
+  get fullName() {
+    return `${this.name} ${this.surname}`;
+  },
+
+  set fullName(value) {
+    [this.name, this.surname] = value.split(" ");
+  }
+}
+这样就创建了一个可读可写的属性 - fullName
+当一个对象只有getter时，会报错
+let user = {
+  get fullName() {
+    return `...`;
+  }
+};
+但是还有其他属性时是可以的
+let user = {
+  name: "John",
+  surname: "Smith",
+
+  get fullName() {
+    return `${this.name} ${this.surname}`;
+  }
+```
+
+具体用法
+
+```js
+let user = {
+  name: "John",
+  surname: "Smith"
+};
+
+Object.defineProperty(user, 'fullName', {
+  get() {
+    return `${this.name} ${this.surname}`;
+  },
+
+  set(value) {
+    [this.name, this.surname] = value.split(" ");
+  }
+});
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
