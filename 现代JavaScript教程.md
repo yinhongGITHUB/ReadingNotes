@@ -1116,13 +1116,100 @@ Object.defineProperty(user, 'fullName', {
 });
 ```
 
+##### 原型、原型继承与原型链
+
+###### 定义：
+
+每个对象都有原型（ _ proto _ ）,默认是指向原型对象的（Prototype）。
+
+原型对象（Prototype）也有原型（ _ proto _ ），其值为空
+
+###### 继承：
+
+```js
+let animal = {
+  eats: true
+};
+let rabbit = {
+  jumps: true
+};
+
+rabbit.__proto__ = animal; 
+```
+
+那么，rabbit对象的原型就指向了animal，他也就继承了animal的属性和方法
+
+原型继承可以很长，从而形成了原型链。
+
+这里只有两个限制：
+
+1. 引用不能形成闭环。如果我们试图给 `__proto__` 赋值但会导致引用形成闭环时，JavaScript 会抛出错误。
+2. `__proto__` 的值可以是对象，也可以是 `null`。而其他的类型都会被忽略。
+
+```js
+let user = {
+  name: "John",
+  surname: "Smith",
+
+  set fullName(value) {
+    [this.name, this.surname] = value.split(" ");
+  },
+
+  get fullName() {
+    return `${this.name} ${this.surname}`;
+  }
+};
+
+let admin = {
+  __proto__: user,
+  isAdmin: true
+};
+
+alert(admin.fullName); // John Smith (*)
+
+// setter triggers!
+admin.fullName = "Alice Cooper"; // (**)
+
+alert(admin.fullName); // Alice Cooper，admin 的内容被修改了
+alert(user.fullName);  // John Smith，user 的内容被保护了
+```
+
+###### 继承注意点：
+
+1.原型仅用于读取属性。对于写入/删除操作可以直接在当前对象上进行，而不会去影响继承的那个对象。
+
+下面的例子好理解
+
+```js
+let hamster = {
+  stomach: [],
+
+  eat(food) {
+    this.stomach.push(food);
+      // this.stomach = [food] // 可以修复，原因：写入和删除是在当前对象操作，push并没有改变内存地址
+  }
+};
+
+let speedy = {
+  __proto__: hamster
+};
+
+let lazy = {
+  __proto__: hamster
+};
+
+// 这只仓鼠找到了食物
+speedy.eat("apple");
+alert( speedy.stomach ); // apple
+
+// 这只仓鼠也找到了食物，为什么？请修复它。
+alert( lazy.stomach ); // apple
+
+```
 
 
 
-
-
-
-
+2.for...in 会循环也会迭代继承的属性
 
 
 
