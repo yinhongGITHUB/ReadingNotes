@@ -1211,7 +1211,22 @@ alert( lazy.stomach ); // apple
 
 2.for...in 会循环也会迭代继承的属性
 
+##### 原型链
 
+```js
+let arr = [1, 2, 3];
+
+// 它继承自 Array.prototype？
+alert( arr.__proto__ === Array.prototype ); // true
+
+// 接下来继承自 Object.prototype？
+alert( arr.__proto__.__proto__ === Object.prototype ); // true
+
+// 原型链的顶端为 null。
+alert( arr.__proto__.__proto__.__proto__ ); // null
+```
+
+由此可见，内建对象（内建原型）Array`、`Date`、`Function及其他，的原型对象( .prototype )都指向Object.prototype。即：万物皆对象。
 
 
 
