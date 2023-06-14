@@ -1228,6 +1228,27 @@ alert( arr.__proto__.__proto__.__proto__ ); // null
 
 由此可见，内建对象（内建原型）Array`、`Date`、`Function及其他，的原型对象( .prototype )都指向Object.prototype。即：万物皆对象。
 
+##### 有趣的this指向问题
+
+```js
+Function.prototype.defer = function(ms) {
+  let f = this;
+  console.log('[ this ] >', this)// fn函数
+  return function(...args) {
+    console.log('[ this ] >', this)// window对象
+    setTimeout(() => f.apply(this, args), ms);
+  }
+};
+
+// check it
+function fn(a, b) {
+  console.log('[ this ] >', this)// 如果上面没有apply 就是window对象  有了apply那就是传的是什么就是什么
+  alert( a + b );
+}
+
+fn.defer(1000)(1, 2); // 1 秒后显示 3
+```
+
 
 
 
