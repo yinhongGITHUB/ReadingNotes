@@ -1252,9 +1252,29 @@ fn.defer(1000)(1, 2); // 1 秒后显示 3
 // bind 第二个参数是参数1，参数2  但是返回的是一个数组
 ```
 
+##### 对象的constructor
 
+每个对象都有constructor，包括原型对象。对象的constructor指向的是该实例对象的构造函数即就是该实例对象。
 
+特别例子：
 
+```js
+
+      function Rabbit() {}
+Rabbit.prototype = {
+  eats: true
+};
+
+let rabbit = new Rabbit();
+
+Rabbit.prototype = {
+  eats: false
+};
+
+console.log( rabbit.eats ); // true
+```
+
+因为 new其实创建了一个新的对象出来，然后将构造函数Rabbit里面的属性都赋值给变量rabbit，相当于深拷贝了，然后再去修改构造函数Rabbit的值，其实是不会影响变量rabbit的。
 
 
 
