@@ -1276,9 +1276,118 @@ console.log( rabbit.eats ); // true
 
 因为 new其实创建了一个新的对象出来，然后将构造函数Rabbit里面的属性都赋值给变量rabbit，相当于深拷贝了，然后再去修改构造函数Rabbit的值，其实是不会影响变量rabbit的。
 
+##### 对象深拷贝技巧
 
+这样可以比for in 更加正确的拷贝对象的所有属性，可枚举的和不可枚举的。
 
+```js
+let clone = Object.create(
+  Object.getPrototypeOf(obj),
+  Object.getOwnPropertyDescriptors(obj)
+);
+Object.getPrototypeOf() 静态方法返回指定对象的原型
+Object.getOwnPropertyDescriptors() 静态方法返回给定对象的所有自有属性描述符
 
+//  Object.create函数理解
+let obj = Object.create(null);
+// 或者：obj = { __proto__: null }
+```
+
+##### 原型赋值注意点
+
+`__proto__` 属性很特殊：它必须是一个对象或者 `null`。字符串不能成为原型。这就是为什么将字符串赋值给 `__proto__` 会被忽略。
+
+##### pointer-events
+
+该属性用于设置dom元素是否可以成为点击事件的目标元素，从而达到越过某个元素，去点击他下面元素的效果。
+
+##### 类
+
+1.class创建的类不能直接函数名加括号调用，因为创建的函数具有特殊的内部属性标`[[IsClassConstructor]]: true`，直接调用会报错。
+
+2.类也可以如下方式，命名表达式的方式创建。
+
+```js
+// (规范中没有这样的术语，但是它和命名函数表达式类似)
+let User = class MyClass {
+  sayHi() {
+    alert(MyClass); // MyClass 这个名字仅在类内部可见
+  }
+};
+
+new User().sayHi(); // 正常运行，显示 MyClass 中定义的内容
+
+alert(MyClass); // error，MyClass 在外部不可见
+```
+
+但是这样是可以的，因为这是创建了两个类。
+
+```js
+function makeClass(phrase) {
+  // 声明一个类并返回它
+  return class {
+    sayHi() {
+      alert(phrase);
+    }
+  };
+}
+
+// 创建一个新的类
+let User = makeClass("Hello");
+
+new User().sayHi(); // Hello
+```
+
+类中可以直接创建get/set
+
+```js
+class User {
+
+  constructor(name) {
+    // 调用 setter
+    this.name = name;
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(value) {
+    if (value.length < 4) {
+      alert("Name is too short.");
+      return;
+    }
+    this._name = value;
+  }
+
+}
+
+let user = new User("John");
+alert(user.name); // John
+
+user = new User(""); // Name is too short.
+```
+
+注意 ：箭头函数的this，是这个函数定义时，所在作用域的this，由此引出静态作用域和动态作用域的区别。
+
+静态作用域：函数的作用域，在定义时，就已经决定了。
+
+动态作用域：函数的作用域，在调用时才决定。
+
+例子如下：
+
+```js
+var val = 1;
+function test() {
+    console.log(val);
+}
+function bar() {
+    var val = 2;
+    test();
+}
+
+bar();// 静态作用域打印1，动态作用域打印2
+```
 
 
 
