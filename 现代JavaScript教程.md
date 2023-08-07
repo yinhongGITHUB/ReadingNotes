@@ -1399,11 +1399,141 @@ bar();// 静态作用域打印1，动态作用域打印2
 
 访问规则：private成员只能被本类成员（类内）访问，不能被派生类访问，protected成员可以被派生类访问。在类外，保护成员和私有成员都不能被访问。
 
+##### Class 为此提供了 `"super"` 关键字。
+
+1. 执行 `super.method(...)` 来调用一个父类方法。
+
+2. 执行 `super(...)` 来调用一个父类 constructor（只能在我们的 constructor 中）。
+
+注意：super点方法可以在子级中任意位置使用，但是super()这样当初一个函数调用，则只能在子级的constructor（构造器函数）中调用。
+
+##### 继承类的 constructor 必须调用 `super(...)`，并且 (!) 一定要在使用 `this` 之前调用。
+
+1. 要么子级不写constructor函数。
+2. 但是只有写了constructor，就必须先调用super()（即先调用父级的构造器函数），而且此行代码还必须写到this之前。
+
+```js
+class  a{
+  constructor(){
+    this.name = '张三'
+  }
+}
+class b extends a{
+  constructor(name){// 要么就整个子级都不写，写了就必须先写spuer
+    super('传什么都行，但是没有我这行代码会报错')
+    this.name = name
+  }
+  getName(){
+    console.log(this.name);
+  }
+}
+
+let c = new b('李四')
+c.getName()
+```
 
 
 
+```js
+class Animal {
+  constructor(name) {
+    this.speed = 0;
+    this.name = name;
+  }
+  // ...
+}
 
+class Rabbit extends Animal {
 
+  constructor(name, earLength) {
+    this.speed = 0;
+    this.name = name;
+    this.earLength = earLength;
+  }
+
+  // ...
+}
+
+// 不工作！
+let rabbit = new Rabbit("White Rabbit", 10); // Error: this is not defined.
+```
+
+##### super只在继承类（也就是子级）的各个函数第一级作用域下才有用
+
+```js
+class Rabbit extends Animal {
+  stop() {
+    setTimeout(() => super.stop(), 1000); // 正常运行
+  }
+}
+class Rabbit extends Animal {
+  stop() {
+    super.stop()// 正常运行
+  }
+}
+class Rabbit extends Animal {
+  stop() {
+      (function(){
+            super.stop()// 报错  因为这里的super跟  函数stop中的super不一样
+      }())
+  }
+}
+```
+
+##### 类的构造器函数
+
+1. 类都会有一个默认的构造器函数（constructor）。
+
+2. 子级继承的父级之后，如果子级没有自己的构造器函数（constructor），会在调用子级的时候去执行父级的构造器函数（constructor）。
+
+##### 类的初始化顺序
+
+- 对于基类（也就是常说的父级）（还未继承任何东西的那种），在构造函数调用前初始化。
+- 对于派生类（也就是常说的子级），在 `super()` 后立刻初始化。
+
+初始化：指对类字段赋值叫初始化（暂时这么理解）。就是定义了但是还没赋值。
+
+经典案例：
+
+```js
+class Animal {
+  name = 'animal';
+
+  constructor() {
+    alert(this.name); // (*)
+  }
+}
+
+class Rabbit extends Animal {
+  name = 'rabbit';
+}
+
+new Animal(); // animal
+new Rabbit(); // animal
+```
+
+```js
+class Animal {
+  showName() {  // 而不是 this.name = 'animal'
+    alert('animal');
+  }
+
+  constructor() {
+    this.showName(); // 而不是 alert(this.name);
+  }
+}
+
+class Rabbit extends Animal {
+  showName() {
+    alert('rabbit');
+  }
+}
+
+new Animal(); // animal
+new Rabbit(); // rabbit
+```
+
+注意：箭头函数没有自己的this和super，所以他们能够融入到就近的上下文中，像透明似的。
 
 
 
