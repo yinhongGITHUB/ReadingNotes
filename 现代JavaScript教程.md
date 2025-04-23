@@ -1533,7 +1533,7 @@ new Animal(); // animal
 new Rabbit(); // rabbit
 ```
 
-注意：箭头函数没有自己的this和super，所以他们能够融入到就近的上下文中，像透明似的。
+注意：箭头函数没有自己的this和super，所以他们能够融入到就近的上下文中，就像透明似的。
 
 
 
