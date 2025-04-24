@@ -1546,6 +1546,12 @@ new Rabbit(); // rabbit
         if (typeof obj !== "object" && obj != null) {
           return obj;
         }
+        let isObject = (value) => {
+          return (
+            value != null &&
+            (typeof value == "object" || typeof value == "function")
+          );
+        };
         // Proxy相当于在对象外层加拦截
         const observed = new Proxy(obj, {
           get(target, key, receiver) {
