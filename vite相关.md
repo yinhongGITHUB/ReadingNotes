@@ -42,3 +42,7 @@ export default {
   },
 };
 ```
+
+#### vite 的默认分包最小限制
+
+vite 的 chunkSizeWarningLimit 默认为 500kb 超过会警告
