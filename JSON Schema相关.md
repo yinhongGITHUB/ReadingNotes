@@ -2,7 +2,7 @@
 
 JSON Schema 是用来描述和校验 JSON 数据结构的标准。
 
-##### 文档：中文网链接：https://json-schema.apifox.cn/#%E4%BA%8C%E4%BB%80%E4%B9%88%E6%98%AF-schema-
+##### 文档：https://json-schema.apifox.cn/#%E4%BA%8C%E4%BB%80%E4%B9%88%E6%98%AF-schema-
 
 ##### 简单例子
 
