@@ -236,3 +236,94 @@ alert(employee.fullName);
 private：仅类内部可访问，最严格。
 protected：类和子类可访问，外部不可访问。
 public：任何地方都能访问，最宽松。
+
+#### 类型操作符
+
+四种有趣的实验
+
+##### 第一种 定义变量只能是固定的枚举对象类型
+
+```js
+enum Direction {
+  Up = "UP",
+  Down = "DOWN",
+  Left = "LEFT",
+  Right = "RIGHT"
+}
+
+
+// typeof Direction 得到枚举对象类型
+let a:typeof Direction // a的值只能是 a = Direction; // 只允许这样
+// a = {
+//   Up: "UP",
+//   Down: "DOWN"
+// }
+// 是不被允许的
+
+```
+
+##### 第二种 定义变量只能是枚举的所有的 key 取值类型（-----推荐-----）
+
+```js
+enum Direction {
+  Up = "UP",
+  Down = "DOWN",
+  Left = "LEFT",
+  Right = "RIGHT"
+}
+
+
+// keyof typeof Direction 得到所有枚举成员值（key）的联合类型
+type DirectionKeys = keyof typeof Direction; // "Up" | "Down" | "Left" | "Right"
+
+let a: DirectionKeys = "Up"; // 合法
+// let a: DirectionKeys = "UP"; // 报错，必须是成员值（key），不是成员值（key）会报错
+```
+
+##### 第三种 定义变量只能是枚举的所有的 value 取值类型
+
+注意：第三种和第四种的区别是
+
+第三种 可以直接 a = 'UP'
+第四种不行，第四种只能 a = Direction.Up
+
+```js
+enum Direction {
+  Up = "UP",
+  Down = "DOWN",
+  Left = "LEFT",
+  Right = "RIGHT"
+}
+
+// "UP" | "DOWN" | "LEFT" | "RIGHT"
+let v: Direction[keyof typeof Direction] = "UP";    // 合法
+// let v: DirectionValue = "Up"; // 报错
+```
+
+##### 第四种 定义变量只能是该枚举下的取值（取值方式必须是 Direction.xxx）（-----推荐-----）
+
+```js
+enum Direction {
+  Up = "UP",
+  Down = "DOWN",
+  Left = "LEFT",
+  Right = "RIGHT"
+}
+
+
+let a:Direction
+/**
+ *
+ * 那么 a 的取值只能是 Direction 枚举的 value，也就是：
+ * a = Direction.Up;    // "UP"
+ * a = Direction.Down;  // "DOWN"
+ * a = Direction.Left;  // "LEFT"
+ * a = Direction.Right; // "RIGHT"
+ * 不能直接赋值为字符串 "UP"、"DOWN" 等，必须用 Direction.Up
+ */
+
+/**
+ * 类型断言也可以：
+ * a = "UP" as Direction; // 这样也可以，但不推荐
+ */
+```
