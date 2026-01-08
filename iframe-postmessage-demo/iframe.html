@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>iframe页面</title>
+</head>
+<body>
+    <h1>iframe页面</h1>
+    <button id="sendToParent">发送消息到父页面</button>
+    <div id="message"></div>
+
+    <script>
+        document.getElementById('sendToParent').addEventListener('click', () => {
+            // 发送消息到父窗口
+            window.parent.postMessage(
+                { type: 'reply', message: '你好，父页面!' },
+                'https://your-domain.com'
+            );
+        });
+
+        // 接收来自父窗口的消息
+        window.addEventListener('message', (event) => {
+            // 验证消息来源
+            if (event.origin !== 'https://your-domain.com') return;
+            
+            document.getElementById('message').innerHTML = 
+                `收到来自父页面的消息: ${JSON.stringify(event.data)}`;
+            
+            // 自动回复
+            event.source.postMessage(
+                { type: 'auto-reply', message: '已收到你的消息' },
+                event.origin
+            );
+        });
+    </script>
+</body>
+</html>    

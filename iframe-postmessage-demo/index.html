@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>父页面</title>
+</head>
+<body>
+    <h1>父页面</h1>
+    <button id="sendToIframe">发送消息到iframe</button>
+    <div id="response"></div>
+    
+    <!-- iframe 指向不同域名 -->
+    <iframe id="myIframe" src="https://your-iframe-domain.com/iframe.html" width="100%" height="300"></iframe>
+
+    <script>
+        document.getElementById('sendToIframe').addEventListener('click', () => {
+            const iframe = document.getElementById('myIframe');
+            // 发送消息到iframe
+            iframe.contentWindow.postMessage(
+                { type: 'greeting', message: '你好，iframe!' },
+                'https://your-iframe-domain.com'
+            );
+        });
+
+        // 接收来自iframe的消息
+        window.addEventListener('message', (event) => {
+            // 验证消息来源
+            if (event.origin !== 'https://your-iframe-domain.com') return;
+            
+            document.getElementById('response').innerHTML = 
+                `收到来自iframe的消息: ${JSON.stringify(event.data)}`;
+        });
+    </script>
+</body>
+</html>    
