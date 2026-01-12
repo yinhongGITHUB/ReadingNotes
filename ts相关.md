@@ -91,44 +91,6 @@ Foo 是一个组件或者类
 typeof Foo 得到的是“类的类型”或“组件的类型”（构造函数类型），不是实例类型。
 InstanceType<typeof Foo> 得到的是“实例类型”，也就是 new Foo() 或 <Foo /> 组件实例的类型。
 
-#### 条件类型 + infer 推断
-
-```js
-// 提取数组的元素类型
-type ElementType<T> = T extends (infer U)[] ? U : T;
-
-type A = ElementType<number[]>; // number
-type B = ElementType<string>;   // string
-type C = ElementType<boolean[]>; // boolean
-// T extends (infer U)[]：判断 T 是否为数组类型（如 string[]、number[]），如果是，则用 infer U 推断出数组元素类型 U。? U : T：如果 T 是数组，则结果类型为 U（即数组元素类型）；如果 T 不是数组，则结果类型为 T 本身。
-
-// 提取元组第一个元素类型
-type First<T> = T extends [infer U, ...any[]] ? U : never;
-
-type A = First<[number, string, boolean]>; // number
-
-// 提取函数参数类型
-type FirstArg<T> = T extends (arg: infer U, ...args: any[]) => any ? U : never;
-
-type A = FirstArg<(x: number, y: string) => void>; // number
-
-// 提取函数返回值类型
-type ReturnType<T> = T extends (...args: any[]) => infer R ? R : any;
-
-type A = ReturnType<() => boolean>; // boolean
-
-// 提取构造函数实例类型
-type InstanceType<T> = T extends new (...args: any[]) => infer R ? R : any;
-
-class Foo {}
-type A = InstanceType<typeof Foo>; // Foo
-
-// 提取对象属性类型
-type PropertyType<T> = T extends { prop: infer P } ? P : never;
-
-type A = PropertyType<{ prop: number }>; // number
-```
-
 #### never 类型
 
 在 TypeScript 中，never 表示“永远不会发生的类型”，即没有任何值能赋给它。
@@ -326,4 +288,265 @@ let a:Direction
  * 类型断言也可以：
  * a = "UP" as Direction; // 这样也可以，但不推荐
  */
+```
+
+#### TypeScript：type 和 interface 的区别
+
+##### 1. 基本定义
+
+- `interface`：用于定义对象的结构（属性、方法），主要用于面向对象编程中的类型约束。
+- `type`：类型别名，可以为任意类型（基本类型、联合类型、元组、对象等）起别名。
+
+##### 2. 扩展性
+
+- `interface` 支持多次声明同名接口，会自动合并。
+- `type` 不能重复声明同名类型。
+
+##### 3. 继承和实现
+
+- `interface` 可以通过 `extends` 继承其他接口，也可以被类 `implements` 实现。
+- `type` 也可以通过交叉类型（`&`）扩展，但不能被类 `implements`。
+
+##### 4. 表达能力
+
+- `type` 能表示更复杂的类型（如联合类型、元组、映射类型等）。
+- `interface` 主要用于描述对象结构。
+
+##### 5. 示例
+
+```ts
+// interface 示例
+interface Person {
+  name: string;
+  age: number;
+}
+
+// type 示例
+// 对象类型
+type Animal = {
+  name: string;
+  age: number;
+};
+// 联合类型
+type Status = "success" | "error";
+// 元组类型
+type Point = [number, number];
+```
+
+##### 6. 何时用？
+
+- 如果是对象结构，优先用 `interface`（更适合面向对象、可扩展）。
+- 需要联合类型、元组、映射等复杂类型时用 `type`。
+
+##### 7. 总结
+
+- `interface` 更适合面向对象和可扩展场景。
+- `type` 更灵活，能表达更复杂的类型。
+
+#### extends 关键字详解
+
+TypeScript 中的 extends 主要有两大用法：
+
+1. 类型继承（interface/class）
+2. 条件类型中的类型约束
+
+---
+
+##### 1. 类型继承
+
+- 用于 interface 或 class，实现继承父接口/父类的属性和方法。
+
+```ts
+interface Animal {
+  name: string;
+}
+
+interface Dog extends Animal {
+  breed: string;
+}
+
+class Person {
+  age: number;
+}
+
+class Student extends Person {
+  grade: number;
+}
+```
+
+---
+
+##### 2. 条件类型中的 extends
+
+- 用于类型判断和类型推断。
+- 语法：`T extends U ? X : Y`，如果 T 能赋值给 U，则类型为 X，否则为 Y。
+
+```ts
+// 判断类型是否为 string
+type IsString<T> = T extends string ? true : false;
+type A = IsString<"abc">; // true
+type B = IsString<123>; // false
+
+// infer 结合 extends 做类型提取
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+type X = UnwrapPromise<Promise<number>>; // number
+type Y = UnwrapPromise<string>; // string
+```
+
+---
+
+##### 总结
+
+- interface/class 的 extends 用于继承结构。
+- 条件类型中的 extends 用于类型判断、类型提取、类型分发等高级类型编程。
+
+#### infer 关键字详解
+
+TypeScript 的 infer 关键字用于在条件类型中对类型进行“推断”，常与 extends 结合使用。
+
+---
+
+##### 1. 基本用法
+
+- infer 只能在条件类型（T extends ... ? ... : ...）的 true 分支中使用。
+- 用于从复杂类型中提取（推断）某部分类型。
+
+```ts
+// 提取数组元素类型
+type ElementType<T> = T extends (infer U)[] ? U : T;
+type A = ElementType<number[]>; // number
+type B = ElementType<string>; // string
+
+// 提取 Promise 的内部类型
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+type X = UnwrapPromise<Promise<number>>; // number
+type Y = UnwrapPromise<string>; // string
+
+// 提取函数参数类型
+type FirstArg<T> = T extends (arg: infer U, ...args: any[]) => any ? U : never;
+type P = FirstArg<(x: number, y: string) => void>; // number
+
+// 提取函数返回值类型
+type ReturnType<T> = T extends (...args: any[]) => infer R ? R : any;
+type R = ReturnType<() => boolean>; // boolean
+```
+
+---
+
+##### 2. infer 的常见场景
+
+- 提取数组、元组、Promise、函数等类型的内部类型。
+- 实现类型工具，如 Parameters、ReturnType、InstanceType 等。
+
+---
+
+##### 3. 总结
+
+- infer 让类型推断更灵活、强大，适合做类型“拆包”和类型工具开发。
+- 只能在条件类型的 true 分支中使用。
+
+#### InstanceType 工具类型详解
+
+TypeScript 内置的工具类型 `InstanceType<T>` 用于获取构造函数类型 T 的实例类型。
+
+---
+
+##### 1. 基本用法
+
+- 语法：`InstanceType<typeof 构造函数>`
+- 传入一个类或构造函数的类型，返回其实例的类型。
+
+```ts
+class Foo {
+  name: string = "foo";
+}
+
+// typeof Foo 得到的是构造函数类型
+// InstanceType<typeof Foo> 得到的是 Foo 的实例类型
+let a: InstanceType<typeof Foo>;
+a = new Foo(); // 合法
+// a = { name: 'bar' }; // 只要结构兼容也可以
+```
+
+---
+
+##### 2. 实现原理
+
+InstanceType 的实现：
+
+```ts
+type InstanceType<T extends new (...args: any) => any> = T extends new (
+  ...args: any
+) => infer R
+  ? R
+  : any;
+```
+
+- 通过条件类型和 infer，提取构造函数返回的实例类型。
+
+---
+
+##### 3. 常见场景
+
+- 在 Vue、React 等框架中，结合 ref、组件类型推断组件实例类型。
+- 用于泛型工厂函数、依赖注入等场景。
+
+---
+
+##### 4. 示例
+
+```ts
+function create<T extends new (...args: any) => any>(Ctor: T): InstanceType<T> {
+  return new Ctor();
+}
+
+class Bar {
+  value = 123;
+}
+
+const bar = create(Bar); // bar 的类型是 Bar
+```
+
+---
+
+##### 5. 总结
+
+- `InstanceType<T>` 是类型体操中常用的类型工具，能自动推断构造函数的实例类型，提升类型安全和开发效率。
+
+#### 条件类型 + infer 推断
+
+```js
+// 提取数组的元素类型
+type ElementType<T> = T extends (infer U)[] ? U : T;
+
+type A = ElementType<number[]>; // number
+type B = ElementType<string>;   // string
+type C = ElementType<boolean[]>; // boolean
+// T extends (infer U)[]：判断 T 是否为数组类型（如 string[]、number[]），如果是，则用 infer U 推断出数组元素类型 U。? U : T：如果 T 是数组，则结果类型为 U（即数组元素类型）；如果 T 不是数组，则结果类型为 T 本身。
+
+// 提取元组第一个元素类型
+type First<T> = T extends [infer U, ...any[]] ? U : never;
+
+type A = First<[number, string, boolean]>; // number
+
+// 提取函数参数类型
+type FirstArg<T> = T extends (arg: infer U, ...args: any[]) => any ? U : never;
+
+type A = FirstArg<(x: number, y: string) => void>; // number
+
+// 提取函数返回值类型
+type ReturnType<T> = T extends (...args: any[]) => infer R ? R : any;
+
+type A = ReturnType<() => boolean>; // boolean
+
+// 提取构造函数实例类型
+type InstanceType<T> = T extends new (...args: any[]) => infer R ? R : any;
+
+class Foo {}
+type A = InstanceType<typeof Foo>; // Foo
+
+// 提取对象属性类型
+type PropertyType<T> = T extends { prop: infer P } ? P : never;
+
+type A = PropertyType<{ prop: number }>; // number
 ```
