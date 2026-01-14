@@ -13,7 +13,7 @@ WebSocket 服务器的地址，必须以 ws:// 或 wss://（加密）开头。
 例如："json" 或 ["json", "xml"]
 
 ```js
-const socket = new WebSocket("ws://example.com/socket");
+const socket = new WebSocket("ws://example.com/socket);
 // 或者对于安全连接使用 wss://
 socket.onopen = function () {
   console.log("Connection opened");
@@ -35,5 +35,3 @@ socket.onclose = function () {
   console.log("Connection closed");
 };
 ```
-
-web 服务器：Apache，有很多处理引擎，例如：针对 php 的 html 的处理引擎
