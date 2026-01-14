@@ -550,3 +550,39 @@ type PropertyType<T> = T extends { prop: infer P } ? P : never;
 
 type A = PropertyType<{ prop: number }>; // number
 ```
+
+#### 类型保护
+
+以下都是类型保护的一种方式
+
+```js
+class Dog {
+  bark() {
+    console.log("Woof!");
+  }
+}
+
+class Cat {
+  meow() {
+    console.log("Meow!");
+  }
+}
+
+function speak(animal: Dog | Cat) {
+  if (animal instanceof Dog) {
+    animal.bark(); // ✅ animal 是 Dog 类型
+  } else {
+    animal.meow(); // ✅ animal 是 Cat 类型
+  }
+}
+
+function printLength(value: string | number) {
+  if (typeof value === "string") {
+    // 此处 value 被缩小为 string 类型
+    console.log(value.length); // ✅ 合法
+  } else {
+    // 此处 value 被缩小为 number 类型
+    console.log(value.toString()); // ✅ 合法
+  }
+}
+```
