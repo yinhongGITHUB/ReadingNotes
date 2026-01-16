@@ -416,4 +416,9 @@ canvas.height = 300 * dpr; // 设置画布的实际像素高度，也乘以dpr
 canvas.style.width = "400px"; // 但页面上显示的宽度还是400px（不变）
 canvas.style.height = "300px"; // 页面上显示的高度还是300px（不变）
 ctx.scale(dpr, dpr); // 把画布坐标系整体缩放dpr倍，这样画出来的内容不会变大，但会变得更清晰细腻，适配高分屏
+
+canvas.width / canvas.height 是“画布的实际像素尺寸”，决定了底层有多少像素可以画，影响渲染精度和内容大小。比如 width=800，画布有800个像素宽。
+
+canvas.style.width / style.height 是“页面上显示的尺寸”，决定了canvas在网页上看起来有多大（比如400px），只是CSS样式，不影响底层像素数量。
+ - 总结：dpr越大，canvas实际像素越多，画面越清晰，这样才能适配高分屏，不然就糊了。
 ```
