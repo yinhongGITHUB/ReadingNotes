@@ -154,7 +154,7 @@ vite 里面
 3. ESM 模块化：利用浏览器的原生 ESM 进行模块加载
 4. 按需编译：试试编译请求的模块
 5. 热模块替换（HMR）：通过 WebSocket 实现模块的局部更新
-6. Source Maps：自动生成 Source Maps，便于调试（Source Maps 是一种将编译后的代码（如压缩后的 JavaScript、转译后的 7. TypeScript/ESNext、CSS 预处理器生成的 CSS）映射回原始源代码的技术。）
+6. Source Maps：自动生成 Source Maps，便于调试（Source Maps 是一种将编译后的代码（如压缩后的 JavaScript、转译后的TypeScript/ESNext、CSS 预处理器生成的 CSS）映射回原始源代码的技术。）
 
 #### esbuild 的具体解析过程
 
