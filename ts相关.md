@@ -443,13 +443,13 @@ type R = ReturnType<() => boolean>; // boolean
 
 TypeScript 内置的工具类型 `InstanceType<T>` 用于获取构造函数类型 T 的实例类型。
 
----
-
-#### 开发中实例话一个 ref 组件对象时用到（const A = ref<InstanceType<typeof 组件名>>()）
+##### 注意： 开发中实例话一个 ref 组件对象时用到（const A = ref<InstanceType<typeof 组件名>>()）
 
 Foo 是一个组件或者类
 typeof Foo 得到的是“类的类型”或“组件的类型”（构造函数类型），不是实例类型。
 InstanceType<typeof Foo> 得到的是“实例类型”，也就是 new Foo() 或 <Foo /> 组件实例的类型。
+
+---
 
 ##### 1. 基本用法
 
