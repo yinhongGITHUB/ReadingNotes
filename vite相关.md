@@ -191,3 +191,19 @@ npm init -y
 
 1. 采用的就是 Tree Shaking
 2. Scope Hoisting：将所有模块的作用域提升到顶层，减少闭包包裹带来的性能开销，同时也有助于进一步优化 Tree Shaking。
+
+#### vite 打包时生成两个包，通常是因为用了 @vitejs/plugin-legacy 插件，目的是兼容新旧浏览器：
+
+生成两个包的原因
+现代包（modern）：只包含 ESM 语法，体积小，专为支持 ES modules 的现代浏览器。
+兼容包（legacy）：经过 Babel 转换和 polyfill，兼容 IE11 等老旧浏览器。
+如何引入
+Vite 会自动在 HTML 里插入两套 script 标签：
+
+<script type="module" src="..."> 只被现代浏览器加载。
+<script nomodule src="..."> 只被不支持 ES modules 的老浏览器加载。
+示例（打包后 index.html）：
+
+浏览器加载原理
+现代浏览器只加载 type="module" 的脚本。
+老浏览器不识别 type="module"，但会加载 nomodule 的脚本。
