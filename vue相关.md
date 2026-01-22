@@ -101,6 +101,58 @@ const proxy = new Proxy(obj, {
 
 这样可以保证 Proxy 拦截时的 this 指向和原生一致，避免出错。
 
+#### Vue3 如何基于 Proxy 实现双向绑定
+
+Vue3 的响应式系统核心是通过 ES6 的 Proxy 实现的。Proxy 可以拦截对象的各种操作（如 get、set、deleteProperty 等），从而实现数据的自动追踪和更新。
+
+**核心原理**：
+
+1. **数据代理**：
+   - Vue3 使用 `Proxy` 包裹响应式对象（如 reactive、ref），拦截对对象属性的读取和设置。
+   - 当读取属性时（get），进行依赖收集；当设置属性时（set），触发依赖更新。
+
+2. **依赖收集**：
+   - 在组件渲染或计算属性、watch 等读取响应式数据时，Vue3 会把当前的副作用函数（如渲染函数）记录到依赖集合中。
+   - 依赖集合通常用 `WeakMap -> Map -> Set` 结构存储：
+     - WeakMap 的 key 是目标对象，value 是 Map
+     - Map 的 key 是属性名，value 是 Set（存储依赖该属性的副作用函数）
+
+3. **依赖触发**：
+   - 当响应式对象的属性被修改（set）时，Vue3 会找到对应属性的依赖集合，并依次执行这些副作用函数，实现视图或计算属性的自动更新。
+
+4. **双向绑定**：
+   - 由于 Proxy 能拦截所有属性的 get/set，数据变化会自动通知视图更新，视图（如 v-model）对数据的修改也会自动同步到数据本身，实现了数据和视图的双向绑定。
+
+**副作用函数（effect function）指的是那些会因为响应式数据变化而被自动重新执行的函数。常见的副作用函数包括组件的渲染函数、计算属性、watch 监听回调等***
+
+**与 Vue2 的区别**：
+
+1. Vue2 用 Object.defineProperty 只能劫持已存在的属性，新增/删除属性无法响应，数组变动需特殊处理。
+2. Vue3 用 Proxy 可以劫持整个对象，支持所有属性的动态添加、删除和数组操作，响应式能力更强。
+
+**简单示例**：
+
+```js
+const data = { count: 0 };
+const proxy = new Proxy(data, {
+  get(target, key, receiver) {
+    // 依赖收集逻辑
+    return Reflect.get(target, key, receiver);
+  },
+  set(target, key, value, receiver) {
+    // 依赖触发逻辑
+    const result = Reflect.set(target, key, value, receiver);
+    // 通知视图更新
+    return result;
+  },
+});
+```
+
+**总结**：
+Vue3 通过 Proxy 实现了对对象的深度、全面的拦截，结合依赖收集和触发机制，实现了高效、灵活的响应式系统和双向绑定。
+
+---
+
 #### vue3的生命周期
 
 Vue3 生命周期执行顺序（含 setup）：
