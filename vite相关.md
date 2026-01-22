@@ -230,90 +230,107 @@ Vite 会自动在 HTML 里插入两套 script 标签：
 
 ### rollupOptions 常用配置项
 
-Vite 构建底层用的是 Rollup，build.rollupOptions 可用于高级自定义。常用配置如下：
+Vite 构建底层用的是 Rollup，在 vite.config.ts 的 build.rollupOptions 中可进行高级自定义。
 
-1. **input**
-   - 入口文件，可以是字符串或对象（多入口）。
-   - 示例：
-     ```js
-     input: 'src/main.js'
-     // 或
-     input: { main: 'src/main.js', admin: 'src/admin.js' }
-     ```
+**完整配置示例：**
 
-2. **output**
-   - 输出相关配置（文件名、格式、目录等）。
-   - 示例：
-     ```js
-     output: {
-       dir: 'dist',
-       entryFileNames: '[name].js',
-       format: 'es',
-       sourcemap: true
-     }
-     ```
+```js
+// vite.config.ts
+import { defineConfig } from "vite";
 
-3. **plugins**
-   - 插件数组，扩展功能（如 babel、terser、alias 等）。
-   - 示例：
-     ```js
-     plugins: [require('@rollup/plugin-node-resolve')(), ...]
-     ```
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      // 1. 入口配置（顶级配置）
+      // 多页应用：配置多个 HTML 文件（执行 vite build 会同时打包所有入口）
+      input: {
+        main: "./index.html", // 打包后生成 dist/index.html
+        admin: "./admin.html", // 打包后生成 dist/admin.html
+      },
+      // 单页应用：可以不配置，Vite 会自动从 index.html 读取
+      // 或手动配置 JS 入口：input: './src/main.ts'
 
-4. **external**
-   - 指定不被打包进 bundle 的外部依赖（如 CDN、全局变量）。
-   - 示例：
-     ```js
-     external: ["vue", "react"];
-     ```
+      // 如果只想打包单个入口，可以临时注释其他入口：
+      // input: './index.html'  // 只打包主页
 
-5. **treeshake**
-   - 是否开启 Tree Shaking，默认 true。
-   - 示例：
-     ```js
-     treeshake: true;
-     ```
+      // 2. 外部依赖排除（顶级配置）
+      external: ["vue", "react"],
 
-6. **manualChunks**
-   - 手动拆分代码块，实现更细粒度的分包。
-   - 示例：
-     ```js
-     output: {
-       manualChunks(id) {
-         if (id.includes('node_modules')) {
-           return 'vendor';
-         }
-       }
-     }
-     ```
+      // 3. Tree Shaking 配置（顶级配置，默认 true）
+      treeshake: true,
 
-7. **globals**
-   - 为 UMD/IIFE 格式指定全局变量名（配合 external 使用）。
-   - 示例：
-     ```js
-     output: {
-       globals: {
-         vue: "Vue";
-       }
-     }
-     ```
+      // 4. 输出配置（output 对象）
+      output: {
+        // 输出目录
+        dir: "dist",
 
-8. **watch**
-   - 开发时监听文件变动自动重打包。
-   - 示例：
-     ```js
-     watch: {
-       include: 'src/**',
-       exclude: 'node_modules/**'
-     }
-     ```
+        // 入口文件命名规则
+        entryFileNames: "assets/[name]-[hash].js",
 
-**常用场景：**
+        // 非入口 chunk 命名规则
+        chunkFileNames: "assets/[name]-[hash].js",
 
-- 多入口打包
-- 外部依赖排除
-- 代码分包优化
-- 插件扩展功能
-- 输出格式和文件名自定义
+        // 静态资源命名规则
+        assetFileNames: "assets/[name]-[hash].[ext]",
 
-在 Vite 中，rollupOptions 主要用于 build 阶段的高级自定义。
+        // 输出格式：es、cjs、umd、iife
+        format: "es",
+
+        // 是否生成 sourcemap
+        sourcemap: true,
+
+        // 手动分包（Vite 中最常用的优化配置）
+        manualChunks(id) {
+          // 将 node_modules 的包单独打包成 vendor
+          if (id.includes("node_modules")) {
+            return "vendor";
+          }
+          // 可以根据路径进一步细分
+          if (id.includes("src/components")) {
+            return "components";
+          }
+        },
+
+        // UMD/IIFE 格式的全局变量名（配合 external 使用）
+        globals: {
+          vue: "Vue",
+          react: "React",
+        },
+      },
+    },
+  },
+});
+```
+
+**关键配置说明：**
+
+1. **input（入口）**
+   - **多页应用**：配置多个 HTML 文件（如 `{ main: './index.html', admin: './admin.html' }`）
+     - 执行 `vite build` 时会**同时打包所有入口**
+     - 打包后生成多个 HTML 文件（如 `dist/index.html`、`dist/admin.html`）
+   - **单页应用**：可以不配置，Vite 会自动从 index.html 中的 `<script>` 标签读取入口
+   - **库模式**：配置 JS/TS 入口文件（如 `'./src/index.ts'`）
+2. **external（外部依赖）**
+   - 指定不打包进 bundle 的依赖（如 CDN 引入的库）
+   - 常用于库模式开发
+
+3. **output.manualChunks（手动分包）**
+   - Vite 中最常用的性能优化配置
+   - 可将第三方库、公共模块单独打包，提升缓存效率
+
+4. **output.entryFileNames / chunkFileNames / assetFileNames**
+   - 自定义输出文件的命名规则
+   - `[name]`：文件名，`[hash]`：内容哈希，`[ext]`：扩展名
+
+5. **output.format（输出格式）**
+   - `es`：ES Module（Vite 默认）
+   - `cjs`：CommonJS
+   - `umd`：UMD（通用模块）
+   - `iife`：立即执行函数
+
+**注意事项：**
+
+- Vite 默认配置已经很优秀，大多数场景下只需配置 manualChunks 进行分包优化
+- **单页应用**：input 一般不需要手动配置，Vite 会自动从 index.html 中的 `<script type="module" src="/src/main.ts">` 读取
+- **多页应用**：input 需要配置多个 HTML 文件路径
+- **库模式**：input 配置 JS/TS 入口，同时需要配置 external 和 globals
