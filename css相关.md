@@ -31,6 +31,8 @@ offsetWidth：元素的宽度（包括内边距和边框）
 padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 20px)
 env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 20px);
 用于适配刘海屏、异形屏等设备的安全区域
+constant(safe-area-inset-bottom) // 兼容老版本 注意：constant必须写在env上面
+env(safe-area-inset-bottom)
 
 #### 文字省略号 css 设置
 
