@@ -28,24 +28,28 @@ offsetWidth：元素的宽度（包括内边距和边框）
 
 #### css 环境变量
 
+```js
 padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 20px)
 env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 20px);
-用于适配刘海屏、异形屏等设备的安全区域
-constant(safe-area-inset-bottom) // 兼容老版本 注意：constant必须写在env上面
-env(safe-area-inset-bottom)
+// 用于适配刘海屏、异形屏等设备的安全区域
+padding-bottom: calc(constant(safe-area-inset-bottom) + 40rpx);// 兼容老版本 注意：constant必须写在env上面
+padding-bottom: calc(env(safe-area-inset-bottom) + 40rpx);
+```
 
 #### 文字省略号 css 设置
 
+```js
 text-overflow: ellipsis;
-超出部分用省略号 ... 显示（只对单行有效，配合 overflow: hidden 和 white-space: nowrap）。
+// 超出部分用省略号 ... 显示（只对单行有效，配合 overflow: hidden 和 white-space: nowrap）。
 overflow: hidden;
-超出容器的内容隐藏，不显示。
+// 超出容器的内容隐藏，不显示。
 display: -webkit-box;
-让元素成为弹性盒子模型，支持多行截断（需要 Webkit 内核，适用于小程序和部分浏览器）。
+// 让元素成为弹性盒子模型，支持多行截断（需要 Webkit 内核，适用于小程序和部分浏览器）。
 -webkit-box-orient: vertical;
-设置弹性盒子的排列方向为垂直方向。
+// 设置弹性盒子的排列方向为垂直方向。
 -webkit-line-clamp: 1;
-限制显示的行数为 1 行，超出部分用省略号显示。
+// 限制显示的行数为 1 行，超出部分用省略号显示。
+```
 
 #### CSS 选择器
 
