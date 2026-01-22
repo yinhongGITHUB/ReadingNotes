@@ -287,6 +287,21 @@ WeakSet 不能遍历，没有 size 属性，也没有遍历方法。
 Set 适合需要完整集合、可遍历、可统计的场景。
 WeakSet 适合存储对象引用、临时集合，防止内存泄漏。
 
+##### map 的循环
+
+```js
+const map = new Map([
+  ["a", 1],
+  ["b", 2],
+]);
+const iterator = map.entries();
+// const iterator = map.values();
+// const iterator = map.keys();
+
+console.log(iterator.next().value); // ['a', 1]
+console.log(iterator.next().value); // ['b', 2]
+```
+
 ## 20. 二进制和八进制字面量
 
 - 0b/0B 表示二进制，0o/0O 表示八进制。
