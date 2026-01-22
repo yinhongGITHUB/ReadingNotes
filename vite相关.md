@@ -213,12 +213,12 @@ Scope Hoisting 后，变量和函数直接在同一个作用域里声明和访�
 
 #### vite 打包时生成两个包，通常是因为用了 @vitejs/plugin-legacy 插件，目的是兼容新旧浏览器：
 
-- 生成两个包的原因
-  现代包（modern）：只包含 ESM 语法，体积小，专为支持 ES modules 的现代浏览器。
-  兼容包（legacy）：经过 Babel 转换和 polyfill，兼容 IE11 等老旧浏览器。
-  如何引入
-  Vite 会自动在 HTML 里插入两套 script 标签：
+现代包（modern）：只包含 ESM 语法，体积小，专为支持 ES modules 的现代浏览器。
+兼容包（legacy）：经过 Babel 转换和 polyfill，兼容 IE11 等老旧浏览器。
+如何引入
+Vite 会自动在 HTML 里插入两套 script 标签：
 
+```js
 <script type="module" src="..."> 只被现代浏览器加载。
 <script nomodule src="..."> 只被不支持 ES modules 的老浏览器加载。
 示例（打包后 index.html）：
@@ -226,3 +226,94 @@ Scope Hoisting 后，变量和函数直接在同一个作用域里声明和访�
  - 浏览器加载原理
 1.现代浏览器只加载 type="module" 的脚本。
 2.老浏览器不识别 type="module"，但会加载 nomodule 的脚本。
+```
+
+### rollupOptions 常用配置项
+
+Vite 构建底层用的是 Rollup，build.rollupOptions 可用于高级自定义。常用配置如下：
+
+1. **input**
+   - 入口文件，可以是字符串或对象（多入口）。
+   - 示例：
+     ```js
+     input: 'src/main.js'
+     // 或
+     input: { main: 'src/main.js', admin: 'src/admin.js' }
+     ```
+
+2. **output**
+   - 输出相关配置（文件名、格式、目录等）。
+   - 示例：
+     ```js
+     output: {
+       dir: 'dist',
+       entryFileNames: '[name].js',
+       format: 'es',
+       sourcemap: true
+     }
+     ```
+
+3. **plugins**
+   - 插件数组，扩展功能（如 babel、terser、alias 等）。
+   - 示例：
+     ```js
+     plugins: [require('@rollup/plugin-node-resolve')(), ...]
+     ```
+
+4. **external**
+   - 指定不被打包进 bundle 的外部依赖（如 CDN、全局变量）。
+   - 示例：
+     ```js
+     external: ["vue", "react"];
+     ```
+
+5. **treeshake**
+   - 是否开启 Tree Shaking，默认 true。
+   - 示例：
+     ```js
+     treeshake: true;
+     ```
+
+6. **manualChunks**
+   - 手动拆分代码块，实现更细粒度的分包。
+   - 示例：
+     ```js
+     output: {
+       manualChunks(id) {
+         if (id.includes('node_modules')) {
+           return 'vendor';
+         }
+       }
+     }
+     ```
+
+7. **globals**
+   - 为 UMD/IIFE 格式指定全局变量名（配合 external 使用）。
+   - 示例：
+     ```js
+     output: {
+       globals: {
+         vue: "Vue";
+       }
+     }
+     ```
+
+8. **watch**
+   - 开发时监听文件变动自动重打包。
+   - 示例：
+     ```js
+     watch: {
+       include: 'src/**',
+       exclude: 'node_modules/**'
+     }
+     ```
+
+**常用场景：**
+
+- 多入口打包
+- 外部依赖排除
+- 代码分包优化
+- 插件扩展功能
+- 输出格式和文件名自定义
+
+在 Vite 中，rollupOptions 主要用于 build 阶段的高级自定义。
