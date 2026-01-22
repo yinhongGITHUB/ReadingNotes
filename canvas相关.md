@@ -395,6 +395,14 @@ ctx.drawImage(imgA, 0, 0); // A在B上面
 
 - canvas 里没有“图层”概念，谁后画谁在上面。
 - 也就是说，图片的“层级”完全靠绘制顺序决定。
+
+// ------------------------------ canvas 把画布转化成图片并下载 ------------------------------
+const canvas = document.getElementById('myCanvas');
+const url = canvas.toDataURL('image/png');
+const a = document.createElement('a');
+a.href = url;
+a.download = 'canvas.png';
+a.click();
 ```
 
 ### 9.2 阴影效果
