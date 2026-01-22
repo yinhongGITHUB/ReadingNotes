@@ -2,54 +2,58 @@
 
 - 1xx 信息响应
 
-100 Continue：初步请求已接受，需继续发送请求
-
+100 Continue：初步请求已接受，需继续发送请求  
 101 Switching Protocols：服务器切换协议
 
 - 2xx 成功
 
-200 OK：请求成功
-201 Created：已创建新资源
-202 Accepted：请求已接受但未处理完成
-204 No Content：无内容
+200 OK：请求成功  
+201 Created：已创建新资源  
+202 Accepted：请求已接受但未处理完成  
+204 No Content：无内容  
 206 Partial Content：部分内容（断点续传）
 
 - 3xx 重定向
 
-301 Moved Permanently：永久重定向
-302 Found：临时重定向
-303 See Other：查看其他地址
-304 Not Modified：未修改
+301 Moved Permanently：永久重定向  
+302 Found：临时重定向  
+303 See Other：表示请求资源已被临时移动到另一个 URI，客户端应使用 GET 方法访问新的 URI，常用于 POST 请求后重定向到结果页面。会在响应头中使用 Location 字段指定新的 URL
+304 Not Modified：未修改  
 307 Temporary Redirect：临时重定向
+308 Permanent Redirect：永久重定向  
 308 Permanent Redirect：永久重定向
+
+**【302 和 307 的区别】**
+302 Found：临时重定向，早期标准未规定重定向后请求方法是否改变，部分浏览器会将 POST 变为 GET。
+307 Temporary Redirect：临时重定向，明确要求重定向后请求方法和请求体不变，严格遵循原请求方式。
 
 - 4xx 客户端错误
 
-400 Bad Request：请求语法错误
-401 Unauthorized：未授权
-403 Forbidden：禁止访问
-404 Not Found：未找到资源
-405 Method Not Allowed：方法不允许
-408 Request Timeout：请求超时
-409 Conflict：资源冲突
-413 Payload Too Large：请求体过大
-414 URI Too Long：URI 过长
-415 Unsupported Media Type：不支持的媒体类型
+400 Bad Request：请求语法错误  
+401 Unauthorized：未授权  
+403 Forbidden：禁止访问  
+404 Not Found：未找到资源  
+405 Method Not Allowed：方法不允许  
+408 Request Timeout：请求超时  
+409 Conflict：资源冲突  
+413 Payload Too Large：请求体过大  
+414 URI Too Long：URI 过长  
+415 Unsupported Media Type：不支持的媒体类型  
 429 Too Many Requests：请求过多
 
 - 5xx 服务端错误
 
-500 Internal Server Error：服务器内部错误
-501 Not Implemented：未实现
-502 Bad Gateway：网关错误
-503 Service Unavailable：服务不可用
-504 Gateway Timeout：网关超时
+500 Internal Server Error：服务器内部错误  
+501 Not Implemented：未实现  
+502 Bad Gateway：网关错误  
+503 Service Unavailable：服务不可用  
+504 Gateway Timeout：网关超时  
 505 HTTP Version Not Supported：不支持的 HTTP 版本
 
 #### https 的加密过程
 
-非对称加密：公钥和私钥，公钥私钥都可用来加密，公钥加密必须私钥解密，反之亦然
-对称加密：解密加密都用同一个密钥
+**非对称加密**：公钥和私钥，公钥私钥都可用来加密，公钥加密必须私钥解密，反之亦然  
+**对称加密**：解密加密都用同一个密钥
 服务器先把公钥和 CA 证书明文发给浏览器，CA 证书里面的证书信息和数字签名可以证明，这个公钥确实来自于服务器，（注意：CA 证书是采用的是非对称加密，所有浏览器自动保存 CA 的公钥，CA 的公钥通常是预先安装在浏览器或操作系统中的）
 浏览器将生成对称加密的密钥，将新增对称加密。然后将对称加密的密钥和加密后的信息用公钥加密，一起发给服务端
 
@@ -77,15 +81,6 @@ Cache-Control（响应、请求带的）（max-age=3600 时间段）、Expires�
 开启的时机 Cache-Control：no-cache 实际上是用来开启协商缓存的
 Etag（响应带的）（服务端给浏览器） / If-None-Match（请求带的）（浏览器带着这个参数，里面放着 Etag 的标识，给服务端，比较是否一致）
 Last-Modified（响应带的）（服务器给浏览器，最后的修改时间） / If-Modified-Since（请求带的）（浏览器带着这个参数，给服务端，GMT 时间，精确到秒级，秒以下的修改无法检测到）
-
-beforeCreate：在实例初始化之后，数据观测 (data observer) 和 event/watcher 事件配置之前同步调用。
-created：在实例创建完成后被调用。在这一步，实例已完成以下的配置：数据观测 (data observer)，属性和方法的运算，watch/event 事件回调。然而，挂载阶段还没开始，$el 属性目前不可见。
-beforeMount：在挂载开始之前被调用：相关的 render 函数首次被调用。
-mounted：实例被挂载后调用，这时 el 被新创建的 vm.￼el 也在文档内。
-beforeUpdate：数据更新时调用，发生在虚拟 DOM 打补丁之前。这里适合在更新之前访问现有的 DOM，比如手动移除已添加的事件监听器。
-updated：由于数据更改导致的虚拟 DOM 重新渲染和打补丁，在这之后会调用该钩子。当这个钩子被调用时，组件 DOM 已经更新，所以你现在可以执行依赖于 DOM 的操作。
-beforeUnmount（以前是 beforeDestroy）：在卸载组件实例之前调用。在这个阶段，实例仍然是完全正常的。
-unmounted（以前是 destroyed）：卸载组件实例后调用。调用此钩子时，组件实例的所有指令都被解绑，所有事件监听器都被移除，所有子组件实例也被卸载。
 
 #### 三次握手的过程：
 
