@@ -218,6 +218,8 @@ Chrome 使用 Code Cache 技术，该技术会把编译后的字节码存储在�
 【PUT vs PATCH】
 PUT 是整体替换资源，PATCH 是部分更新资源。PUT 幂等，PATCH 通常非幂等。
 
+**幂等（Idempotent）是指无论对同一个资源执行一次操作还是多次操作，结果都是一样的，不会因为多次执行而产生副作用或不同的结果**
+
 【DELETE vs PUT】
 DELETE 用于删除，PUT 用于新增或整体替换，两者都幂等。
 
