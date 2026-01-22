@@ -1,3 +1,50 @@
+#### 常见的 HTTP 状态码
+
+- 1xx 信息响应
+
+100 Continue：初步请求已接受，需继续发送请求
+101 Switching Protocols：服务器切换协议
+
+- 2xx 成功
+
+200 OK：请求成功
+201 Created：已创建新资源
+202 Accepted：请求已接受但未处理完成
+204 No Content：无内容
+206 Partial Content：部分内容（断点续传）
+
+- 3xx 重定向
+
+301 Moved Permanently：永久重定向
+302 Found：临时重定向
+303 See Other：查看其他地址
+304 Not Modified：未修改
+307 Temporary Redirect：临时重定向
+308 Permanent Redirect：永久重定向
+
+- 4xx 客户端错误
+
+400 Bad Request：请求语法错误
+401 Unauthorized：未授权
+403 Forbidden：禁止访问
+404 Not Found：未找到资源
+405 Method Not Allowed：方法不允许
+408 Request Timeout：请求超时
+409 Conflict：资源冲突
+413 Payload Too Large：请求体过大
+414 URI Too Long：URI 过长
+415 Unsupported Media Type：不支持的媒体类型
+429 Too Many Requests：请求过多
+
+- 5xx 服务端错误
+
+500 Internal Server Error：服务器内部错误
+501 Not Implemented：未实现
+502 Bad Gateway：网关错误
+503 Service Unavailable：服务不可用
+504 Gateway Timeout：网关超时
+505 HTTP Version Not Supported：不支持的 HTTP 版本
+
 #### https 的加密过程
 
 非对称加密：公钥和私钥，公钥私钥都可用来加密，公钥加密必须私钥解密，反之亦然
