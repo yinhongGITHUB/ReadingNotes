@@ -3,6 +3,7 @@
 - 1xx 信息响应
 
 100 Continue：初步请求已接受，需继续发送请求
+
 101 Switching Protocols：服务器切换协议
 
 - 2xx 成功
