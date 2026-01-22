@@ -199,7 +199,7 @@ for (const v of arr) {
   }
   ```
 
-## 13. 模块化（Module）
+## 13. 模块化（ES Module）
 
 - import/export 语法，支持模块化开发。
   ```js
