@@ -55,3 +55,36 @@ A 分包在 page.json 里面配置
 "uvip-year-card-use": "view",
 }
 ```
+
+#### uniapp 小程序路由跳转常用方式有以下几种：
+
+1. uni.navigateTo
+   跳转到非 tabBar 页面，保留当前页面，可返回。
+   示例：
+   uni.navigateTo({ url: '/pages/scan/scan' })
+
+2. uni.redirectTo
+   关闭当前页面，跳转到非 tabBar 页面，不能返回。
+   示例：
+   uni.redirectTo({ url: '/pages/webview/webview' })
+
+3. uni.switchTab
+   跳转到 tabBar 页面，关闭所有非 tabBar 页面。
+   示例：
+   uni.switchTab({ url: '/pages/home/home' })
+
+4. uni.reLaunch
+   关闭所有页面，打开新页面（常用于登录、重启等场景）。
+   示例：
+   uni.reLaunch({ url: '/pages/mine/mine' })
+
+5. uni.navigateBack
+   返回上一级页面或多级页面。
+   示例：
+   uni.navigateBack({ delta: 1 })
+
+**注意事项：**
+
+- tabBar 页面只能用 switchTab 跳转，不能用 navigateTo/redirectTo。
+- 分包页面跳转需写全路径（含分包 root）。
+- url 参数需 encodeURIComponent 编码。
