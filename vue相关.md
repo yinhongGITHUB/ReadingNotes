@@ -186,3 +186,69 @@ Vue3 生命周期执行顺序（含 setup）：
 - **created 及之后（mounted、updated、beforeUnmount、unmounted）**：可以用 this 访问 data/props/methods/computed
 - **methods、computed、watch**：this 指向组件实例，可访问所有 data/props/methods/computed
 - **模板**：直接用变量名访问 data
+
+#### vue3-smooth-dnd vue3中组件拖拽，也可以互相拖拽
+
+```js
+import { Container, Draggable } from "vue3-smooth-dnd";
+
+    <Container
+      behaviour="copy"
+      :group-name="DROP_GROUP"
+      drag-class="drag-class"
+      :get-child-payload="(x: number) => getComponentPayload(x, index)"
+      >
+      <Draggable >
+        每个元素内容
+      </Draggable>
+    </Container>
+
+
+```
+
+1. **group-name：** 是 vue3-smooth-dnd 的 Container 组件的分组标识属性，用来控制哪些容器之间可以互相拖拽。
+   相同 group-name 的 Container，可以互相拖拽元素（比如从左边拖到右边）。
+   不同 group-name 的 Container，不能互相拖拽，只能在自己容器内部拖动。
+2. **drag-class：**：当你拖拽某个 Draggable 元素时，Container 会自动给被拖拽的元素加上 drag-class 指定的 class。
+3. **behaviour：**
+
+- "move"（默认）：拖拽时，元素会从原容器移除并插入到目标容器，实现“搬移”效果。
+- "copy"：拖拽时，元素会被复制到目标容器，原容器保留原元素，实现“复制”效果。
+  是 Container 组件的一个属性，用于控制拖拽的行为方式。
+
+4. **drop 和 get-child-payload**：拖拽时，get-child-payload 会根据你拖的是第几个，把对应的数据（比如按钮的配置）返回出来。
+   这个数据会被用在 drop（拖拽放下）事件里，添加到屏幕区域，页面就能显示你刚拖过来的那个按钮。
+   drop事件一般这么写：
+
+```js
+/**
+ * addedIndex：表示拖拽放下后，元素被插入到目标容器的第几个位置（索引）。如果是新增，addedIndex 就是新位置的下标。
+ * removedIndex：表示拖拽前，元素在原容器里的索引。如果是从别的容器拖过来，removedIndex 可能是 null；如果是本容器内部排序，removedIndex 就是原来的位置。
+ * payload：就是在 get-child-payload 返回的数据对象
+ */
+export function handleDrop(evt: any, bindings: any[]) {
+  const { addedIndex, removedIndex, payload } = evt;
+  if (addedIndex === removedIndex || payload == null) {
+    // 没有变动
+    return null;
+  }
+
+  if (addedIndex != null) {
+    if (removedIndex != null) {
+      // 移位，交换位置
+      const temp = bindings[removedIndex];
+      bindings.splice(removedIndex, 1);
+      bindings.splice(addedIndex, 0, temp);
+    } else {
+      // 新增
+      bindings.splice(addedIndex, 0, payload);
+    }
+    return payload;
+  } else if (removedIndex != null) {
+    // 移除
+    bindings.splice(removedIndex, 1);
+  }
+
+  return null;
+}
+```
