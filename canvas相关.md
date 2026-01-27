@@ -210,6 +210,7 @@ ctx.fillStyle = "purple";/
 // purple 是 CSS 标准颜色名，代表紫色
 // 你还可以用 'red'（红）、'blue'（蓝）、'green'（绿）、'yellow'（黄）、'black'（黑）、'white'（白）等英文单词作为颜色名
 ctx.fillText("Hello Canvas", 10, 300); // 实心字
+ctx.strokeStyle = 'red'; // 设置描边颜色为红色
 ctx.strokeText("描边文字", 10, 330); // 空心字
 ```
 
