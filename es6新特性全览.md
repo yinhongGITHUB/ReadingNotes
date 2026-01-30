@@ -293,7 +293,8 @@ for (const v of arr) {
   ws.add(obj);
   wm.set(obj, 123);
   ```
-  ##### WeakMap 与 Map 的区别：
+
+##### WeakMap 与 Map 的区别：
 
 1. 键类型：
 
