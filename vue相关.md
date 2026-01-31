@@ -255,4 +255,296 @@ export function handleDrop(evt: any, bindings: any[]) {
 
 #### vue-virtual-scroll-list
 
-待学习....
+`vue-virtual-scroll-list` 是一个用于 Vue 的虚拟滚动列表组件，专门用于优化大数据量列表的渲染性能。它只渲染可视区域内的元素，而不是一次性渲染所有数据，从而大幅提升性能。
+
+**核心原理**：
+- 只渲染可视区域内的列表项
+- 动态计算可视区域范围
+- 复用 DOM 节点
+- 支持动态高度和固定高度
+
+**安装**：
+
+```bash
+npm install vue-virtual-scroll-list --save
+# 或
+pnpm install vue-virtual-scroll-list
+```
+
+**基本用法**：
+
+```vue
+<template>
+  <div>
+    <virtual-list
+      :data-key="'id'"
+      :data-sources="list"
+      :data-component="itemComponent"
+      :estimate-size="50"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import VirtualList from 'vue-virtual-scroll-list';
+import ItemComponent from './ItemComponent.vue';
+
+const list = ref([
+  { id: 1, name: '项目1', value: '值1' },
+  { id: 2, name: '项目2', value: '值2' },
+  // ... 更多数据（可以有几万条）
+]);
+
+const itemComponent = ItemComponent;
+</script>
+```
+
+**ItemComponent.vue（列表项组件）**：
+
+```vue
+<template>
+  <div class="list-item">
+    <h3>{{ source.name }}</h3>
+    <p>{{ source.value }}</p>
+  </div>
+</template>
+
+<script setup>
+// source 是由 vue-virtual-scroll-list 自动注入的 props
+defineProps({
+  source: {
+    type: Object,
+    required: true
+  },
+  index: {
+    type: Number
+  }
+});
+</script>
+
+<style scoped>
+.list-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+</style>
+```
+
+**核心配置属性**：
+
+1. **data-key**（必需）：
+   - 类型：String
+   - 每个数据项的唯一标识字段名（如 'id'）
+   - 用于追踪每个列表项
+
+2. **data-sources**（必需）：
+   - 类型：Array
+   - 列表数据源
+
+3. **data-component**（必需）：
+   - 类型：Component
+   - 渲染每个列表项的组件
+
+4. **estimate-size**：
+   - 类型：Number
+   - 每个列表项的预估高度（单位：px）
+   - 固定高度时设置准确值，动态高度时设置平均值
+
+5. **keeps**：
+   - 类型：Number
+   - 默认值：30
+   - 可视区域保持渲染的项数量（缓冲区大小）
+
+6. **page-mode**：
+   - 类型：Boolean
+   - 默认值：false
+   - 是否使用页面滚动（true）还是容器滚动（false）
+
+**进阶用法**：
+
+```vue
+<template>
+  <div>
+    <virtual-list
+      ref="virtualListRef"
+      class="virtual-scroll-container"
+      :data-key="'id'"
+      :data-sources="bigList"
+      :data-component="itemComponent"
+      :estimate-size="80"
+      :keeps="50"
+      :page-mode="false"
+      @scroll="handleScroll"
+      @tobottom="handleReachBottom"
+      @totop="handleReachTop"
+    >
+      <!-- 顶部插槽 -->
+      <template #header>
+        <div class="list-header">列表头部</div>
+      </template>
+      
+      <!-- 底部插槽 -->
+      <template #footer>
+        <div class="list-footer">
+          <div v-if="loading">加载中...</div>
+          <div v-else-if="noMore">没有更多了</div>
+        </div>
+      </template>
+    </virtual-list>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import VirtualList from 'vue-virtual-scroll-list';
+import ItemComponent from './ItemComponent.vue';
+
+const virtualListRef = ref(null);
+const bigList = ref([]);
+const loading = ref(false);
+const noMore = ref(false);
+const itemComponent = ItemComponent;
+
+// 初始化数据
+onMounted(() => {
+  loadData();
+});
+
+// 加载数据
+function loadData() {
+  const newData = Array.from({ length: 10000 }, (_, i) => ({
+    id: i + 1,
+    name: `项目 ${i + 1}`,
+    value: `值 ${i + 1}`
+  }));
+  bigList.value = newData;
+}
+
+// 滚动事件
+function handleScroll(event, range) {
+  // range: { start: 起始索引, end: 结束索引, padFront: 前置padding, padBehind: 后置padding }
+  console.log('当前渲染范围：', range);
+}
+
+// 触底事件（加载更多）
+function handleReachBottom() {
+  if (loading.value || noMore.value) return;
+  
+  loading.value = true;
+  // 模拟加载更多数据
+  setTimeout(() => {
+    const currentLength = bigList.value.length;
+    const moreData = Array.from({ length: 100 }, (_, i) => ({
+      id: currentLength + i + 1,
+      name: `项目 ${currentLength + i + 1}`,
+      value: `值 ${currentLength + i + 1}`
+    }));
+    bigList.value.push(...moreData);
+    loading.value = false;
+    
+    // 超过 20000 条就不再加载
+    if (bigList.value.length >= 20000) {
+      noMore.value = true;
+    }
+  }, 1000);
+}
+
+// 触顶事件
+function handleReachTop() {
+  console.log('滚动到顶部');
+}
+
+// 滚动到指定位置的方法
+function scrollToIndex(index) {
+  virtualListRef.value.scrollToIndex(index);
+}
+
+// 滚动到指定偏移量
+function scrollToOffset(offset) {
+  virtualListRef.value.scrollToOffset(offset);
+}
+
+// 滚动到底部
+function scrollToBottom() {
+  virtualListRef.value.scrollToBottom();
+}
+
+// 获取当前滚动偏移量
+function getOffset() {
+  return virtualListRef.value.getOffset();
+}
+
+// 获取当前可视区域的数据
+function getSizes() {
+  return virtualListRef.value.getSizes();
+}
+</script>
+
+<style scoped>
+.virtual-scroll-container {
+  height: 600px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+}
+
+.list-header,
+.list-footer {
+  padding: 20px;
+  text-align: center;
+  background: #f5f5f5;
+}
+</style>
+```
+
+**常用事件**：
+
+- **@scroll**：滚动时触发，参数：(event, range)
+- **@tobottom**：滚动到底部时触发（用于加载更多）
+- **@totop**：滚动到顶部时触发
+- **@resized**：列表项尺寸变化时触发
+
+**实例方法**：
+
+- **scrollToIndex(index)**：滚动到指定索引
+- **scrollToOffset(offset)**：滚动到指定偏移量
+- **scrollToBottom()**：滚动到底部
+- **getOffset()**：获取当前滚动偏移量
+- **getClientSize()**：获取容器可视区域大小
+- **getScrollSize()**：获取滚动区域总大小
+- **getSizes()**：获取所有列表项的尺寸信息
+
+**使用场景**：
+
+1. **大数据量列表**：数据超过 1000 条时建议使用
+2. **聊天消息列表**：历史消息记录展示
+3. **商品列表**：电商平台的商品展示
+4. **数据表格**：虚拟表格渲染
+5. **无限滚动加载**：配合触底事件实现无限加载
+
+**性能优化建议**：
+
+1. **固定高度优先**：如果列表项高度固定，性能最佳
+2. **合理设置 keeps**：根据屏幕尺寸和列表项高度调整
+3. **使用唯一 key**：确保 data-key 指向的字段值唯一且稳定
+4. **避免频繁更新**：批量更新数据而非逐条更新
+5. **预估高度准确**：estimate-size 越接近实际高度，性能越好
+
+**注意事项**：
+
+1. 列表项组件会自动接收 `source`（数据）和 `index`（索引）两个 props
+2. 动态高度列表需要组件首次渲染后才能计算准确高度
+3. page-mode 为 true 时，滚动容器是 window，否则是组件本身
+4. 更新 data-sources 时，建议使用不可变数据（重新赋值而非 push/splice）
+
+**与普通列表的对比**：
+
+| 特性 | 普通列表 | 虚拟滚动列表 |
+|------|----------|--------------|
+| 渲染数量 | 全部数据 | 仅可视区域 |
+| DOM 节点数 | 与数据量一致 | 固定数量（keeps） |
+| 内存占用 | 高（数据量大时） | 低 |
+| 首次渲染速度 | 慢（数据量大时） | 快 |
+| 滚动性能 | 卡顿（数据量大时） | 流畅 |
+| 实现复杂度 | 简单 | 稍复杂 |
+| 适用场景 | 小数据量 | 大数据量 |
