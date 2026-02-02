@@ -7,13 +7,13 @@
 
 #### Object.defineProperty
 
- - 优点
-兼容性好：由于 Object.defineProperty 是 ES5 引入的特性，因此它在较旧的浏览器中也得到了广泛支持。
-直接修改现有属性：可以用来定义或修改对象已有属性的描述符（如 writable, enumerable, configurable 等），使得开发者能够精确控制属性的行为。
- - 缺点
-单一属性操作：每次只能定义或修改一个属性，如果需要对多个属性进行处理，则必须重复调用该方法，代码量大且效率较低。
-有限的拦截能力：仅能拦截对属性的基本操作（如 get 和 set），无法全面覆盖所有可能的操作（例如 delete 操作或自有属性的枚举）。
-不支持异步操作：在定义属性时不能执行异步逻辑，所有操作都是同步完成的。
+- 优点
+  兼容性好：由于 Object.defineProperty 是 ES5 引入的特性，因此它在较旧的浏览器中也得到了广泛支持。
+  直接修改现有属性：可以用来定义或修改对象已有属性的描述符（如 writable, enumerable, configurable 等），使得开发者能够精确控制属性的行为。
+- 缺点
+  单一属性操作：每次只能定义或修改一个属性，如果需要对多个属性进行处理，则必须重复调用该方法，代码量大且效率较低。
+  有限的拦截能力：仅能拦截对属性的基本操作（如 get 和 set），无法全面覆盖所有可能的操作（例如 delete 操作或自有属性的枚举）。
+  不支持异步操作：在定义属性时不能执行异步逻辑，所有操作都是同步完成的。
 
 #### Proxy
 
@@ -43,7 +43,8 @@
 get(target, key, receiver) {
   const res = Reflect.get(target, key, receiver);
   // 判断 res 是否是对象且未被代理
-  if (isObject(res)) {
+  // !isReactive(res)：判断是否还没被代理（Vue 内部用 WeakMap 或特殊属性实现）。
+  if (isObject(res)&&!isReactive(res)) {
     return reactive(res); // 懒递归代理
   }
   return res;
