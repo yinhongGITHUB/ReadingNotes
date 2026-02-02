@@ -108,6 +108,7 @@ Vue3 的响应式系统核心是通过 ES6 的 Proxy 实现的。Proxy 可以拦
 **核心原理**：
 
 1. **数据代理**：
+
    - Vue3 使用 `Proxy` 包裹响应式对象（如 reactive、ref），拦截对对象属性的读取和设置。
    - 当读取属性时（get），进行依赖收集；当设置属性时（set），触发依赖更新。
 
@@ -128,7 +129,7 @@ Vue3 的响应式系统核心是通过 ES6 的 Proxy 实现的。Proxy 可以拦
 
 **副作用函数（effect function）是指依赖响应式数据、在数据变化时会被自动重新执行的函数。常见的副作用函数包括组件的渲染函数（render 函数）、计算属性、watch 监听回调等。收集的不是 get 函数本身，而是这些副作用函数对数据的依赖。**
 
-#### 副作用函数 到 页面上的变量count 的具体关联过程如下：
+#### 副作用函数 到 页面上的变量 count 的具体关联过程如下：
 
 1. 页面渲染时，模板里的变量（如 {{ count }}) 会被渲染函数读取，这时 get 拦截器会把当前渲染函数登记到 count 的依赖集合中。
 2. 当 count 变量发生变化时，set 拦截器会找到 count 的依赖集合，把里面登记的渲染副作用函数全部重新执行。
@@ -162,7 +163,7 @@ Vue3 通过 Proxy 实现了对对象的深度、全面的拦截，结合依赖�
 
 ---
 
-#### vue3的生命周期
+#### vue3 的生命周期
 
 Vue3 生命周期执行顺序（含 setup）：
 
@@ -187,7 +188,7 @@ Vue3 生命周期执行顺序（含 setup）：
 - **methods、computed、watch**：this 指向组件实例，可访问所有 data/props/methods/computed
 - **模板**：直接用变量名访问 data
 
-#### vue3-smooth-dnd vue3中组件拖拽，也可以互相拖拽
+#### vue3-smooth-dnd vue3 中组件拖拽，也可以互相拖拽
 
 ```js
 import { Container, Draggable } from "vue3-smooth-dnd";
@@ -218,7 +219,7 @@ import { Container, Draggable } from "vue3-smooth-dnd";
 
 4. **drop 和 get-child-payload**：拖拽时，get-child-payload 会根据你拖的是第几个，把对应的数据（比如按钮的配置）返回出来。
    这个数据会被用在 drop（拖拽放下）事件里，添加到屏幕区域，页面就能显示你刚拖过来的那个按钮。
-   drop事件一般这么写：
+   drop 事件一般这么写：
 
 ```js
 /**
@@ -258,6 +259,7 @@ export function handleDrop(evt: any, bindings: any[]) {
 `vue-virtual-scroll-list` 是一个用于 Vue 的虚拟滚动列表组件，专门用于优化大数据量列表的渲染性能。它只渲染可视区域内的元素，而不是一次性渲染所有数据，从而大幅提升性能。
 
 **核心原理**：
+
 - 只渲染可视区域内的列表项
 - 动态计算可视区域范围
 - 复用 DOM 节点
@@ -286,13 +288,13 @@ pnpm install vue-virtual-scroll-list
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import VirtualList from 'vue-virtual-scroll-list';
-import ItemComponent from './ItemComponent.vue';
+import { ref } from "vue";
+import VirtualList from "vue-virtual-scroll-list";
+import ItemComponent from "./ItemComponent.vue";
 
 const list = ref([
-  { id: 1, name: '项目1', value: '值1' },
-  { id: 2, name: '项目2', value: '值2' },
+  { id: 1, name: "项目1", value: "值1" },
+  { id: 2, name: "项目2", value: "值2" },
   // ... 更多数据（可以有几万条）
 ]);
 
@@ -315,11 +317,11 @@ const itemComponent = ItemComponent;
 defineProps({
   source: {
     type: Object,
-    required: true
+    required: true,
   },
   index: {
-    type: Number
-  }
+    type: Number,
+  },
 });
 </script>
 
@@ -334,24 +336,29 @@ defineProps({
 **核心配置属性**：
 
 1. **data-key**（必需）：
+
    - 类型：String
    - 每个数据项的唯一标识字段名（如 'id'）
    - 用于追踪每个列表项
 
 2. **data-sources**（必需）：
+
    - 类型：Array
    - 列表数据源
 
 3. **data-component**（必需）：
+
    - 类型：Component
    - 渲染每个列表项的组件
 
 4. **estimate-size**：
+
    - 类型：Number
    - 每个列表项的预估高度（单位：px）
    - 固定高度时设置准确值，动态高度时设置平均值
 
 5. **keeps**：
+
    - 类型：Number
    - 默认值：30
    - 可视区域保持渲染的项数量（缓冲区大小）
@@ -383,7 +390,7 @@ defineProps({
       <template #header>
         <div class="list-header">列表头部</div>
       </template>
-      
+
       <!-- 底部插槽 -->
       <template #footer>
         <div class="list-footer">
@@ -396,9 +403,9 @@ defineProps({
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import VirtualList from 'vue-virtual-scroll-list';
-import ItemComponent from './ItemComponent.vue';
+import { ref, onMounted } from "vue";
+import VirtualList from "vue-virtual-scroll-list";
+import ItemComponent from "./ItemComponent.vue";
 
 const virtualListRef = ref(null);
 const bigList = ref([]);
@@ -416,7 +423,7 @@ function loadData() {
   const newData = Array.from({ length: 10000 }, (_, i) => ({
     id: i + 1,
     name: `项目 ${i + 1}`,
-    value: `值 ${i + 1}`
+    value: `值 ${i + 1}`,
   }));
   bigList.value = newData;
 }
@@ -424,13 +431,13 @@ function loadData() {
 // 滚动事件
 function handleScroll(event, range) {
   // range: { start: 起始索引, end: 结束索引, padFront: 前置padding, padBehind: 后置padding }
-  console.log('当前渲染范围：', range);
+  console.log("当前渲染范围：", range);
 }
 
 // 触底事件（加载更多）
 function handleReachBottom() {
   if (loading.value || noMore.value) return;
-  
+
   loading.value = true;
   // 模拟加载更多数据
   setTimeout(() => {
@@ -438,11 +445,11 @@ function handleReachBottom() {
     const moreData = Array.from({ length: 100 }, (_, i) => ({
       id: currentLength + i + 1,
       name: `项目 ${currentLength + i + 1}`,
-      value: `值 ${currentLength + i + 1}`
+      value: `值 ${currentLength + i + 1}`,
     }));
     bigList.value.push(...moreData);
     loading.value = false;
-    
+
     // 超过 20000 条就不再加载
     if (bigList.value.length >= 20000) {
       noMore.value = true;
@@ -452,7 +459,7 @@ function handleReachBottom() {
 
 // 触顶事件
 function handleReachTop() {
-  console.log('滚动到顶部');
+  console.log("滚动到顶部");
 }
 
 // 滚动到指定位置的方法
@@ -539,12 +546,33 @@ function getSizes() {
 
 **与普通列表的对比**：
 
-| 特性 | 普通列表 | 虚拟滚动列表 |
-|------|----------|--------------|
-| 渲染数量 | 全部数据 | 仅可视区域 |
-| DOM 节点数 | 与数据量一致 | 固定数量（keeps） |
-| 内存占用 | 高（数据量大时） | 低 |
-| 首次渲染速度 | 慢（数据量大时） | 快 |
-| 滚动性能 | 卡顿（数据量大时） | 流畅 |
-| 实现复杂度 | 简单 | 稍复杂 |
-| 适用场景 | 小数据量 | 大数据量 |
+| 特性         | 普通列表           | 虚拟滚动列表      |
+| ------------ | ------------------ | ----------------- |
+| 渲染数量     | 全部数据           | 仅可视区域        |
+| DOM 节点数   | 与数据量一致       | 固定数量（keeps） |
+| 内存占用     | 高（数据量大时）   | 低                |
+| 首次渲染速度 | 慢（数据量大时）   | 快                |
+| 滚动性能     | 卡顿（数据量大时） | 流畅              |
+| 实现复杂度   | 简单               | 稍复杂            |
+| 适用场景     | 小数据量           | 大数据量          |
+
+#### import a from 在 vue3 的某个页面里面导入这个组件，如何懒加载
+
+1. defineAsyncComponent
+
+```js
+import { defineAsyncComponent } from "vue";
+
+const AsyncA = defineAsyncComponent(() => import("./a.vue"));
+```
+
+2. 路由懒加载（如果是路由页面）
+
+```js
+const routes = [
+  {
+    path: "/a",
+    component: () => import("./a.vue"),
+  },
+];
+```
