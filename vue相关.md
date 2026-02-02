@@ -28,6 +28,30 @@
   性能开销：相比于直接操作对象，使用 Proxy 可能会带来一定的性能损耗，特别是在高频率访问的情况下。
   调试复杂度增加：由于 Proxy 可以拦截大量操作，可能会使调试变得更加困难，尤其是在没有正确处理某些边缘情况时。
 
+##### proxy 的具体代理过程
+
+1. 初始代理
+   当你用 reactive(obj) 创建响应式对象时，Vue 会用 Proxy 包裹 obj，但只代理第一层。
+
+2. 访问子对象时懒代理
+   当你访问 obj.a，如果 a 是一个对象，Vue 会在 Proxy 的 get 拦截器里判断这个值是不是对象。如果是，并且还没被代理过，就会用 reactive(a) 再包一层代理，然后返回这个新的代理对象。
+
+3. 代码示例
+   Vue 内部类似这样处理：
+
+```js
+get(target, key, receiver) {
+  const res = Reflect.get(target, key, receiver);
+  // 判断 res 是否是对象且未被代理
+  if (isObject(res)) {
+    return reactive(res); // 懒递归代理
+  }
+  return res;
+}
+```
+
+**总结：只有在你访问 obj.a 时，Vue 才会判断 a 是否需要代理，并在需要时自动递归调用 reactive，实现“懒代理”。这样可以节省性能开销。**
+
 #### Composition Api 与 Options Api 进行两大方面的比较
 
 1. 逻辑组织：
