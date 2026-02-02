@@ -264,5 +264,5 @@ CSS 选择器类型丰富，优先级由选择器类型和数量决定。
 **三、注意事项**
 
 - 3D 变换需要浏览器支持，部分老旧浏览器可能不兼容。
-- 使用 3D 变换时，建议为父元素设置 perspective，子元素设置 transform-style: preserve-3d。
+- 使用 3D 变换时，建议为父元素设置 perspective，父元素设置 transform-style: preserve-3d（必须设置在父级，子元素设置无效），这样子元素的 3D 变换才能被保留，形成立体结构。
 - backface-visibility 可用于制作翻转动画时隐藏背面。
