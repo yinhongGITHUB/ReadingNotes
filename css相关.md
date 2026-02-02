@@ -161,3 +161,108 @@ CSS 选择器类型丰富，优先级由选择器类型和数量决定。
 通配符选择器优先级最低，常用于全局样式重置。
 浏览器默认样式优先级最低，任何自定义样式都能覆盖。
 优先级高的样式覆盖低优先级，!important 最高但应谨慎使用。
+
+#### CSS 动画属性详解
+
+**一、transition 相关属性**
+
+- transition-property：指定要过渡的 CSS 属性，如 width、background-color 等。
+- transition-duration：过渡动画持续时间，单位 s 或 ms。
+- transition-timing-function：过渡的速度曲线（如 linear、ease、ease-in、ease-out、cubic-bezier）。
+- transition-delay：动画延迟开始的时间。
+- transition：复合属性，简写形式：transition: property duration timing-function delay;
+
+**二、animation 相关属性**
+
+- @keyframes：定义动画关键帧。
+- animation-name：指定要应用的关键帧动画名称。
+- animation-duration：动画持续时间。
+- animation-timing-function：动画的速度曲线。
+- animation-delay：动画延迟开始的时间。
+- animation-iteration-count：动画播放次数，可为数字或 infinite。
+- animation-direction：动画播放方向（normal、reverse、alternate、alternate-reverse）。
+- animation-fill-mode：动画结束后元素的状态（none、forwards、backwards、both）。
+- animation-play-state：动画的播放与暂停（running、paused）。
+- animation：复合属性，简写形式：animation: name duration timing-function delay iteration-count direction fill-mode play-state;
+
+**三、常见动画用法示例**
+
+```css
+.box {
+  transition: all 0.3s ease;
+}
+.box:hover {
+  background: red;
+  width: 200px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade {
+  animation: fadeIn 1s ease-in;
+}
+```
+
+---
+
+#### CSS 3D 变换属性
+
+**一、常用 3D 变换属性**
+
+- transform: 3D 变换的核心属性，可组合多种变换。
+
+  - rotateX(deg)：绕 X 轴旋转
+  - rotateY(deg)：绕 Y 轴旋转
+  - rotateZ(deg)：绕 Z 轴旋转
+  - translateX(px)：沿 X 轴平移
+  - translateY(px)：沿 Y 轴平移
+  - translateZ(px)：沿 Z 轴平移（需开启 3D 环境）
+  - scaleX(n)、scaleY(n)、scaleZ(n)：沿各轴缩放
+  - perspective(n)：设置 3D 透视距离
+  - matrix3d(...)：3D 变换矩阵
+
+- transform-style: 决定子元素是否保留 3D 变换（flat/preserve-3d）。
+- perspective: 为元素设置透视效果（通常加在父元素上）。
+- perspective-origin: 透视点的位置。
+- backface-visibility: 控制元素背面是否可见（visible/hidden）。
+
+**二、3D 变换常见用法**
+
+```css
+/*
+  .cube 立方体容器，常用于3D场景演示
+  每个属性说明如下：
+*/
+.cube {
+  transform: rotateX(45deg) rotateY(45deg) translateZ(100px); /*
+    依次：
+    rotateX(45deg)：绕X轴旋转45度，让立方体有立体感
+    rotateY(45deg)：绕Y轴旋转45度，进一步增强空间效果
+    translateZ(100px)：整体向屏幕外（Z轴正方向）移动100px，使其离视角更远
+  */
+  transform-style: preserve-3d; /*
+    让子元素（立方体的各个面）保留各自的3D变换效果，形成真正的立体结构
+  */
+  perspective: 800px; /*
+    设置观察者到屏幕的距离（透视距离），数值越小立体感越强，越大越平
+    一般加在父容器上，影响其所有子元素的3D变换
+  */
+}
+.cube-face {
+  backface-visibility: hidden; /*
+    当元素背面朝向用户时是否可见，hidden 表示背面不可见，常用于3D翻转动画
+  */
+}
+```
+
+**三、注意事项**
+
+- 3D 变换需要浏览器支持，部分老旧浏览器可能不兼容。
+- 使用 3D 变换时，建议为父元素设置 perspective，子元素设置 transform-style: preserve-3d。
+- backface-visibility 可用于制作翻转动画时隐藏背面。
