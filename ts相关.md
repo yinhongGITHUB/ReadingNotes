@@ -52,6 +52,60 @@ interface Example {
 }
 ```
 
+#### 抽象类和抽象方法
+
+```js
+abstract class Shape {
+  abstract getArea(): number; // 抽象方法，必须由子类实现
+
+  // 普通方法（非抽象方法），可以有具体实现
+  describe(): void {
+    console.log("这是一个形状");
+  }
+}
+
+// 不能直接 new Shape()，会报错：Cannot create an instance of an abstract class
+
+// 子类继承抽象类，必须实现所有抽象方法
+class Circle extends Shape {
+  radius: number;
+
+  constructor(radius: number) {
+    super();
+    this.radius = radius;
+  }
+
+  // 实现抽象方法
+  getArea(): number {
+    return Math.PI * this.radius * this.radius;
+  }
+}
+
+class Rectangle extends Shape {
+  width: number;
+  height: number;
+
+  constructor(width: number, height: number) {
+    super();
+    this.width = width;
+    this.height = height;
+  }
+
+  // 实现抽象方法
+  getArea(): number {
+    return this.width * this.height;
+  }
+}
+
+// 使用示例
+const circle = new Circle(5);
+console.log(circle.getArea()); // 78.53981633974483
+circle.describe(); // "这是一个形状"
+
+const rect = new Rectangle(4, 6);
+console.log(rect.getArea()); // 24
+```
+
 #### 类的类型限制
 
 implements 限制类的类型，但是只能约束 public 成员，不能约束 private 或 protected。
