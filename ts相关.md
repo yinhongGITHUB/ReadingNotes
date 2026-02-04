@@ -1,3 +1,34 @@
+#### super
+
+super 主要用于类的继承，代表父类。常见用法有：
+
+1. 在子类构造函数中调用 super()，用于调用父类的构造函数，**必须在 this 之前调用**。
+2. 在子类方法中用 super.method() 调用父类同名方法。
+3. super 只能在“子类的构造函数（constructor）和子类的方法（包括静态方法、实例方法）”中使用，不能在类外的普通函数或对象字面量的方法里用。
+
+```js
+class Parent {
+  constructor(name) {
+    this.name = name;
+  }
+  sayHi() {
+    console.log("Hi, " + this.name);
+  }
+}
+class Child extends Parent {
+  constructor(name, age) {
+    super(name); // 调用父类构造函数
+    this.age = age;
+  }
+  sayHi() {
+    super.sayHi(); // 调用父类方法
+    console.log("I am " + this.age + " years old.");
+  }
+}
+```
+
+总结：super 用于访问和调用父类的构造函数和方法，是 ES6 类继承的关键。
+
 #### 一些关于类型的判断
 
 ```js

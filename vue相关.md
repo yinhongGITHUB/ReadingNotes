@@ -601,3 +601,46 @@ const routes = [
   },
 ];
 ```
+
+#### Vue 3 的生命周期
+
+setup 不能用 this
+beforeCreate 能访问 this，但没有数据
+created 及以后能访问 this 和所有数据,如 data props
+
+1. 创建阶段
+   setup()
+
+组合式 API 的入口，响应式数据、方法、生命周期都在这里声明。
+特征：此时还没有 DOM，不能访问 this。
+beforeCreate（选项式 API）
+
+数据和事件尚未初始化，访问不到 data、props、methods。
+(this 在 beforeCreate 阶段已经可以访问，但此时还拿不到 data、props、methods 等数据)
+created
+
+数据已初始化，可以访问响应式数据(即可以拿到 this.data)，但还没有 DOM。
+
+2. 挂载阶段
+   beforeMount
+
+模板已编译，但还未挂载到真实 DOM。
+mounted
+
+组件已挂载到页面，可以访问和操作真实 DOM。
+特征：适合做 DOM 操作、请求接口、第三方库初始化。 3. 更新阶段
+beforeUpdate
+
+响应式数据变化，DOM 更新前触发。
+updated
+
+DOM 更新后触发，可以获取最新的页面状态。
+特征：适合做依赖 DOM 的后处理。 4. 卸载阶段
+beforeUnmount
+
+组件即将被卸载，适合做清理工作。
+unmounted
+
+组件已被卸载，所有事件、定时器等都应清理完毕。
+
+你在 createApp 中使用字符串模板创建 Vue 实例，但是你的项目是基于 Vite + TypeScript 构建的，默认情况下生产环境不包含模板编译器。在开发环境下，Vite 会自动处理模板编译，但打包后的生产版本默认使用 runtime-only 版本的 Vue，不包含模板编译器。我对这块很感兴趣 详细介绍一下

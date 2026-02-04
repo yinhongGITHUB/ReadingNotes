@@ -154,7 +154,7 @@ vite 里面
 3. ESM 模块化：利用浏览器的原生 ESM 进行模块加载
 4. 按需编译：试试编译请求的模块
 5. 热模块替换（HMR）：通过 WebSocket 实现模块的局部更新
-6. Source Maps：自动生成 Source Maps，便于调试（Source Maps 是一种将编译后的代码（如压缩后的 JavaScript、转译后的TypeScript/ESNext、CSS 预处理器生成的 CSS）映射回原始源代码的技术。）
+6. Source Maps：自动生成 Source Maps，便于调试（Source Maps 是一种将编译后的代码（如压缩后的 JavaScript、转译后的 TypeScript/ESNext、CSS 预处理器生成的 CSS）映射回原始源代码的技术。）
 
 #### esbuild 的具体解析过程
 
@@ -171,7 +171,7 @@ vite 里面
   代码生成：将优化后的 AST 重新生成为 JavaScript 代码，并应用压缩、分割等配置。
   资源处理：处理 CSS、图片等非 JS 资源，支持导入、内联或提取为独立文件。
 
-#### 为什么esbuild需要把代码编译成AST再进行分析、修改、优化
+#### 为什么 esbuild 需要把代码编译成 AST 再进行分析、修改、优化
 
 因为 AST（抽象语法树）把代码的语法结构用树状数据结构清晰地表达出来，每个节点都代表代码中的一个语法元素（如变量、函数、表达式等）
 
@@ -311,14 +311,17 @@ export default defineConfig({
    - **单页应用**：可以不配置，Vite 会自动从 index.html 中的 `<script>` 标签读取入口
    - **库模式**：配置 JS/TS 入口文件（如 `'./src/index.ts'`）
 2. **external（外部依赖）**
+
    - 指定不打包进 bundle 的依赖（如 CDN 引入的库）
    - 常用于库模式开发
 
 3. **output.manualChunks（手动分包）**
+
    - Vite 中最常用的性能优化配置
    - 可将第三方库、公共模块单独打包，提升缓存效率
 
 4. **output.entryFileNames / chunkFileNames / assetFileNames**
+
    - 自定义输出文件的命名规则
    - `[name]`：文件名，`[hash]`：内容哈希，`[ext]`：扩展名
 
@@ -334,3 +337,12 @@ export default defineConfig({
 - **单页应用**：input 一般不需要手动配置，Vite 会自动从 index.html 中的 `<script type="module" src="/src/main.ts">` 读取
 - **多页应用**：input 需要配置多个 HTML 文件路径
 - **库模式**：input 配置 JS/TS 入口，同时需要配置 external 和 globals
+
+#### Vite 资源查询后缀
+
+?raw：以字符串导入原始内容
+?url：返回资源的 URL（如图片、字体等，适合 img/src、background-image）
+?inline：将资源内联为 base64 字符串
+?worker：以 Web Worker 方式导入 JS/TS 文件
+?webp：图片转为 webp 格式（部分插件支持）
+?component：将 SVG 作为 Vue 组件导入（需插件）
