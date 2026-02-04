@@ -20,7 +20,6 @@
 303 See Other：表示请求资源已被临时移动到另一个 URI，客户端应使用 GET 方法访问新的 URI，常用于 POST 请求后重定向到结果页面。会在响应头中使用 Location 字段指定新的 URL
 304 Not Modified：未修改  
 307 Temporary Redirect：临时重定向
-308 Permanent Redirect：永久重定向  
 308 Permanent Redirect：永久重定向
 
 **【302 和 307 的区别】**
