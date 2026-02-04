@@ -264,3 +264,66 @@ OPTIONS 用于探测服务器支持的方法，TRACE 用于回显请求内容，
 7. 物理层（Physical Layer）
    功能：定义电气、机械、过程和功能规范。
    描述：涉及实际的物理连接，如电缆类型、信号电压水平、同步信号等。它是 OSI 模型中最底层，直接与传输介质交互
+
+#### JWT（JSON Web Token）
+
+JWT（JSON Web Token）是一种用于安全传递信息的开放标准（RFC 7519），常用于身份认证和信息交换。它的主要特点如下：
+
+1. 结构：JWT 由三部分组成，分别是头部（Header）、载荷（Payload）、签名（Signature），格式为：header.payload.signature。
+2. 头部：声明类型（通常为 JWT）和签名算法（如 HS256）。
+3. 载荷：包含实际要传递的数据，如用户 ID、权限等，也可自定义字段。
+4. 签名：用指定算法和密钥对前两部分进行签名，防止数据被篡改。
+5. 无状态：服务端不保存会话，所有信息都在 token 内，适合分布式系统。
+6. 用途：常用于前后端分离项目的登录认证、接口安全、单点登录（SSO）等场景。
+
+- 优点：跨语言、易于扩展、无状态、传输效率高。
+
+- 缺点：token 过期前无法主动失效，敏感信息需加密处理。
+
+##### jwt 前两部分 header 和 payload
+
+JWT 的前两部分（Header 和 Payload）其实不是“加密”，而是“编码”——通常用 Base64Url 编码。前端拿到 JWT 后，可以直接用 Base64 解码得到明文内容，无需密钥。
+
+```js
+// header（头部）常见字段：
+
+alg：签名算法（如 HS256、RS256）
+typ：类型（通常为 "JWT"）
+
+// payload（载荷）常见字段分为标准字段和自定义字段：
+
+标准字段（建议使用）：
+
+iss：签发者（issuer）
+sub：主题（subject，通常是用户ID）
+aud：受众（audience）
+exp：过期时间（expiration，时间戳，单位秒）
+nbf：生效时间（not before，时间戳，单位秒）
+iat：签发时间（issued at，时间戳，单位秒）
+jti：JWT ID，唯一标识
+```
+
+##### 前端解码方法
+
+用字符串分割（.），取前两段。
+用 atob（浏览器原生）或 Buffer.from(str, 'base64') 解码。
+
+```js
+const [header, payload] = token.split(".");
+const decodedHeader = JSON.parse(atob(header));
+const decodedPayload = JSON.parse(atob(payload));
+```
+
+**注意：**签名部分无法解密，只能用来校验数据是否被篡改，通常由后端完成。通常前端只会用到第二部分 payload
+
+前端每次把 Authorization: Bearer <token> 放在请求头里面即可（token 就是 header.payload.signature）
+
+##### 后端校验 JWT 的 signature 步骤如下：
+
+1. 拿到前端传来的完整 token（header.payload.signature）。
+2. 用同样的算法和密钥，对 header 和 payload 重新进行签名，生成新的 signature。
+3. 比较新生成的 signature 和 token 里的 signature 是否一致。
+   一致：说明 token 没被篡改，校验通过。
+   不一致：说明 token 被修改过，校验失败。
+
+**注意：**第二步的密钥（secret）是由后端服务端自己生成和保存的一个安全字符串，不会下发给前端
