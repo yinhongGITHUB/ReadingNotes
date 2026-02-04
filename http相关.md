@@ -327,3 +327,32 @@ const decodedPayload = JSON.parse(atob(payload));
    不一致：说明 token 被修改过，校验失败。
 
 **注意：**第二步的密钥（secret）是由后端服务端自己生成和保存的一个安全字符串，不会下发给前端
+
+#### Cookie、Session、token
+
+1. Cookie
+   浏览器和服务器之间自动携带的小型文本数据，常用于保存登录状态、用户偏好等。每次请求自动带上，前端可通过 document.cookie 访问。
+   单个 Cookie 最大 4KB，单域名最多约 20 个 Cookie，总大小约 4KB × 20。
+   安全性依赖于 HttpOnly（防止 JS 读取）、SameSite（防止 CSRF）、Secure（仅 HTTPS 传输）等属性。
+   Cookie 会被所有**同域请求自动携带**，易被劫持或泄露，敏感信息建议不存 Cookie。
+
+```js
+// Set-Cookie: key=value; SameSite=Strict
+// Set-Cookie: key=value; SameSite=Lax
+// SameSite=Lax：同源请求和部分安全的跨站 GET 请求（如点击链接、跳转）会带 Cookie，但跨站的 POST、iframe、图片等不会带 Cookie。兼容性好，安全性适中。
+
+// SameSite=Strict：只有同源请求才会带 Cookie，任何跨站请求（无论 GET、POST、iframe、图片等）都不会带 Cookie。安全性最高，但可能影响部分跨站登录、分享等功能
+```
+
+2. Session
+   服务端保存的用户会话数据，通常用来记录用户登录状态、购物车等。浏览器通过 Cookie（如 sessionid）传递 Session 标识，服务端根据标识查找对应数据。
+   Session 数据存储在服务端，前端只保存标识，安全性较高。
+   Session 依赖 Cookie 传递标识，Cookie 丢失则会话失效。
+   适合传统网站，分布式场景需考虑 Session 共享或持久化。
+
+3. Token
+   令牌，常用于前后端分离项目的身份认证（如 JWT）。登录后服务器生成 token，前端保存（如 localStorage、sessionStorage），每次请求通过请求头（如 Authorization）主动携带。
+   Token 通常自包含用户信息，支持无状态认证，灵活性高。
+   Token 长度一般 200~500 字节，远小于 Cookie 总容量限制。
+   Token 不会自动携带，需前端主动添加到请求头，安全性更高。
+   适合移动端、API、分布式系统，但需注意过期和失效机制。
