@@ -69,7 +69,7 @@ ES6 是 JavaScript 语言的重大升级，带来了大量新特性，主要包�
    箭头函数没有 prototype，不能用作类（这里的类指的是**构造函数**）或原型方法。
 
 5. 不能使用 super 和 new.target
-   箭头函数内部不能用 super 和 new.target。
+   箭头函数内部不能用 super（子类里面 有一个箭头函数 但是不能用 super 调用父级的方法） 和 new.target。
 
 #### 什么是构造函数引用
 
