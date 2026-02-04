@@ -198,14 +198,21 @@ Chrome 使用 Code Cache 技术，该技术会把编译后的字节码存储在�
 
 #### 哪些情况会触发预检
 
-1. 跨域
-2. Content-Type 非简单类型（如 application/json），需预检确认服务器支持。
-3. headers: {
+只有跨域请求时，非简单方法（如 PUT/DELETE）或 Content-Type 为非简单类型（如 application/json）才会触发预检（OPTIONS）。如果是**同源请求，无论方法或 Content-Type 如何，都不会有预检**。预检的本质是浏览器为了安全，在跨域时先询问服务器是否允许这类请求。
+
+前提是 **跨域**
+
+1. Content-Type 非简单类型（如 application/json），需预检确认服务器支持。
+   简单的 Content-Type 取值只有三种：
+   text/plain
+   multipart/form-data
+   application/x-www-form-urlencoded
+   其它类型（如 application/json）都属于“非简单 Content-Type”。
+
+2. headers: {
    'X-User-ID': '12345',
    'Accept': 'application/json'
-   }X-User-ID 是自定义头部，不属于简单头部集合，需预检确认服务器允许该头部。
-4. 携带 Cookie（withCredentials: true） 的跨域请求需服务器明确允许（Access-Control-Allow-Credentials: true），且 Content-Type 非简单类型，双重条件触发预检。
-5. 请求方法非简单方法：
+   }X-User-ID 是自定义头部，不属于简单头部集合，需预检确认服务器允许该头部。 3. 携带 Cookie（withCredentials: true） 的跨域请求需服务器明确允许（Access-Control-Allow-Credentials: true），且 Content-Type 非简单类型，双重条件触发预检。 4. 请求方法非简单方法：
    非简单方法包括：
 
 - PUT：用于更新资源（幂等，重复多次结果一样）。
@@ -217,6 +224,10 @@ Chrome 使用 Code Cache 技术，该技术会把编译后的字节码存储在�
 
 【PUT vs PATCH】
 PUT 是整体替换资源，PATCH 是部分更新资源。PUT 幂等，PATCH 通常非幂等。
+
+#### 预检 的本质
+
+浏览器为了安全，在跨域请求包含非简单方法、非简单头部或非简单 Content-Type 时，会先自动发送一个 OPTIONS 请求，询问服务器是否允许真正的跨域请求。只有服务器明确响应允许，浏览器才会继续发起实际请求。这样可以防止恶意网站随意对其他域名发起敏感操作，保护服务器和用户的数据安全。
 
 **幂等（Idempotent）是指无论对同一个资源执行一次操作还是多次操作，结果都是一样的，不会因为多次执行而产生副作用或不同的结果**
 
