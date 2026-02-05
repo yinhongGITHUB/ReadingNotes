@@ -771,4 +771,6 @@ const { name } = state.value.user; // name 是普通字符串，不再响应式
 
 reactive 单层解构出来的是“值”，脱离了 Proxy，失去响应式。
 
+
+
 **注意：**从第二层解构开始，ref 拿到的也是**值**，也失去了响应式
