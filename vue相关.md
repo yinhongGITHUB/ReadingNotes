@@ -686,3 +686,39 @@ cache.set(key, { vnode, instance });
 ##### deactivated
 
 组件被 KeepAlive 缓存后，切换到其他组件时触发（即从 DOM 移除但实例未销毁）。适合做页面暂停、清理定时器、取消请求等操作。
+
+##### KeepAlive 的常用配置
+
+max：最多缓存多少个组件，超出时会淘汰最久未使用的（LRU）。
+include：只缓存名称（name）匹配的组件，可以是字符串、正则或数组。
+exclude：不缓存名称（name）匹配的组件，可以是字符串、正则或数组。
+
+<template>
+  <keep-alive :max="2" :include="['A', 'B']" :exclude="/^C/">
+    <component :is="currentComp"></component>
+  </keep-alive>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import A from './A.vue';
+import B from './B.vue';
+import C from './C.vue';
+
+const currentComp = ref('A'); // 动态切换组件
+// max="2"：只缓存最近2个组件
+// include="['A', 'B']"：只缓存 A 和 B 组件
+// exclude="/^C/"：不缓存名称以 C 开头的组件
+
+
+组件的 name 属性要和 include/exclude 匹配，如：
+// Options API 即vue2的那种传统组件写法
+export default {
+  name: 'A'
+}
+
+// <script setup> 语法
+defineOptions({
+  name: 'A'
+})
+</script>
