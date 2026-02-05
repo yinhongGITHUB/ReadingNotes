@@ -609,33 +609,45 @@ beforeCreate 能访问 this，但没有数据
 created 及以后能访问 this 和所有数据,如 data props
 
 1. 创建阶段
-   setup()
+
+setup()
 
 组合式 API 的入口，响应式数据、方法、生命周期都在这里声明。
 特征：此时还没有 DOM，不能访问 this。
+
 beforeCreate（选项式 API）
 
 数据和事件尚未初始化，访问不到 data、props、methods。
 (this 在 beforeCreate 阶段已经可以访问，但此时还拿不到 data、props、methods 等数据)
+
 created
 
 数据已初始化，可以访问响应式数据(即可以拿到 this.data)，但还没有 DOM。
 
 2. 挂载阶段
-   beforeMount
+
+beforeMount
 
 模板已编译，但还未挂载到真实 DOM。
+
 mounted
 
 组件已挂载到页面，可以访问和操作真实 DOM。
-特征：适合做 DOM 操作、请求接口、第三方库初始化。 3. 更新阶段
+特征：适合做 DOM 操作、请求接口、第三方库初始化。
+
+3. 更新阶段
+
 beforeUpdate
 
 响应式数据变化，DOM 更新前触发。
+
 updated
 
 DOM 更新后触发，可以获取最新的页面状态。
-特征：适合做依赖 DOM 的后处理。 4. 卸载阶段
+特征：适合做依赖 DOM 的后处理。
+
+4. 卸载阶段
+
 beforeUnmount
 
 组件即将被卸载，适合做清理工作。
@@ -644,3 +656,26 @@ unmounted
 组件已被卸载，所有事件、定时器等都应清理完毕。
 
 你在 createApp 中使用字符串模板创建 Vue 实例，但是你的项目是基于 Vite + TypeScript 构建的，默认情况下生产环境不包含模板编译器。在开发环境下，Vite 会自动处理模板编译，但打包后的生产版本默认使用 runtime-only 版本的 Vue，不包含模板编译器。我对这块很感兴趣 详细介绍一下
+
+#### Vue 3 的 KeepAlive 组件实现原理如下：
+
+KeepAlive 是一个抽象组件，内部维护一个缓存对象（Map），以 vnode 的 key 或组件名为标识，存储已渲染的组件实例。
+
+1. 首次渲染被包裹的组件时，会将其 vnode 和实例存入缓存，并挂载到页面。
+2. 当切换到其他组件时，被缓存的组件不会被销毁，而是触发 deactivated 生命周期，并从 DOM 移除，但实例和状态保留在内存。
+3. 再次切换回来时，直接复用缓存中的 vnode 和实例，触发 activated 生命周期，并重新挂载到 DOM。
+4. 支持 max、include、exclude 属性，控制缓存数量和范围。超出 max 时采用 LRU 策略淘汰最久未使用的组件。
+5. 缓存的组件不会执行 unmounted，只会执行 deactivated/activated。
+
+- 核心流程：
+
+渲染时 → 判断是否已缓存 → 未缓存则创建并缓存 → 已缓存则复用
+切换时 → DOM 移除但实例保留 → 重新挂载时复用实例
+
+##### activated
+
+组件被 KeepAlive 缓存后，重新激活（即重新挂载到 DOM）时触发。适合做页面恢复、重新请求数据等操作。
+
+##### deactivated
+
+组件被 KeepAlive 缓存后，切换到其他组件时触发（即从 DOM 移除但实例未销毁）。适合做页面暂停、清理定时器、取消请求等操作。
