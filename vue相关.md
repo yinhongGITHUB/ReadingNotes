@@ -661,6 +661,12 @@ unmounted
 
 KeepAlive 是一个抽象组件，内部维护一个缓存对象（Map），以 vnode 的 key 或组件名为标识，存储已渲染的组件实例。
 
+```js
+key：通常是 vnode 的 key 属性（如果有），或者组件的名称（name），确保唯一性。没有 key 时会用组件类型或自动生成的标识。
+value：是组件的 vnode 和实例对象（即渲染出来的虚拟节点和对应的组件实例）。
+cache.set(key, { vnode, instance });
+```
+
 1. 首次渲染被包裹的组件时，会将其 vnode 和实例存入缓存，并挂载到页面。
 2. 当切换到其他组件时，被缓存的组件不会被销毁，而是触发 deactivated 生命周期，并从 DOM 移除，但实例和状态保留在内存。
 3. 再次切换回来时，直接复用缓存中的 vnode 和实例，触发 activated 生命周期，并重新挂载到 DOM。
