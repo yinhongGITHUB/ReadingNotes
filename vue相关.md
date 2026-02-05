@@ -722,3 +722,53 @@ defineOptions({
   name: 'A'
 })
 </script>
+
+#### 什么时候用 ref
+
+基本类型（number、string、boolean、null、undefined）：必须用 ref
+例：
+
+```js
+const count = ref(0);
+```
+
+对象/数组但只需要单点响应式，或需要频繁解构、传递
+例：
+
+```js
+const form = ref({ name: "", age: 0 });
+```
+
+需要和 UI 组件、表单库等集成，推荐用 ref
+需要类型推导友好、避免解构丢响应式，推荐用 ref
+数组：推荐用 ref([])，避免解构丢响应式
+
+#### 什么时候用 reactive
+
+复杂嵌套对象，且不会频繁解构
+例：
+
+```js
+const state = reactive({ user: { name: "", info: { age: 0 } } });
+```
+
+需要直接用对象属性访问，不想每次都 .value
+数据结构稳定、不会频繁传递/解构，用 reactive 代码更简洁
+
+#### 单层解构，ref 和 reactive
+
+ref 单层解构，拿到的是 ref 下面的 value，所以还是响应式的
+
+```js
+const state = ref({ user: { name: "张三" } });
+
+// 第一层解构
+const user = state.value.user; // user 是响应式的（因为 Proxy 懒代理）
+
+// 第二层解构
+const { name } = state.value.user; // name 是普通字符串，不再响应式
+```
+
+reactive 单层解构出来的是“值”，脱离了 Proxy，失去响应式。
+
+**注意：**从第二层解构开始，ref 拿到的也是**值**，也失去了响应式
