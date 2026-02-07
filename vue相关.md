@@ -780,3 +780,17 @@ reactive 单层解构出来的是“值”，脱离了 Proxy，失去响应式�
 
 - ref 只追踪 .value，依赖收集和触发最简单。
 - reactive 追踪每个属性，依赖关系更复杂，变更时需要遍历更多依赖。
+
+#### 受控组件 和 非受控组件
+
+- 受控组件（Controlled Component）
+
+组件的值（如 input 的 value）完全由父组件的状态（如 data、state）控制
+
+- 非受控组件（Uncontrolled Component）
+
+组件的值由 DOM 自己维护，父组件不直接控制。
+
+例子：
+
+如果子组件 b 的表单数据完全由 b 自己内部管理（比如用 b 自己的 data、ref、state），父组件 a 不通过 props 传递表单值，也不通过事件实时获取和控制这些值，那么 b 就是“非受控组件”。
