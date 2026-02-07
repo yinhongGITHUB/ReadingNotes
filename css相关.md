@@ -149,8 +149,8 @@ ID 选择器 #id (0,1,0,0)
 复合类选择器 .a.b.c.d.e.f (0,0,6,0)
 后代选择器 .a .b (0,0,2,0)
 子选择器 .a > .b (0,0,2,0)
-相邻兄弟选择器（选中紧跟在A元素后面的第一个B元素。） .a + .b (0,0,2,0)
-通用兄弟选择器（选中同一父元素下，A元素后面的所有B元素（不限距离，只要在A后面）） .a ~ .b (0,0,2,0)
+相邻兄弟选择器（选中紧跟在 A 元素后面的第一个 B 元素。） .a + .b (0,0,2,0)
+通用兄弟选择器（选中同一父元素下，A 元素后面的所有 B 元素（不限距离，只要在 A 后面）） .a ~ .b (0,0,2,0)
 分组选择器 div, .class (0,0,0,1)/(0,0,1,0)
 !important color: red !important 覆盖所有
 
@@ -267,4 +267,492 @@ CSS 选择器类型丰富，优先级由选择器类型和数量决定。
 - 使用 3D 变换时，建议为父元素设置 perspective，父元素设置 transform-style: preserve-3d（必须设置在父级，子元素设置无效），这样子元素的 3D 变换才能被保留，形成立体结构。
 - backface-visibility 可用于制作翻转动画时隐藏背面。
 
+---
 
+#### CSS 媒体查询（Media Queries）
+
+媒体查询是 CSS3 中的一个重要特性，用于根据设备的特性（如屏幕宽度、分辨率、方向等）应用不同的样式规则，是实现响应式设计的核心技术。
+
+##### 一、基本语法
+
+媒体查询有两种使用方式：
+
+1. **在 CSS 文件中使用 @media 规则**
+
+```css
+@media media-type and (media-feature) {
+  /* CSS 样式规则 */
+}
+```
+
+2. **在 HTML 中使用 link 标签**
+
+```html
+<link
+  rel="stylesheet"
+  media="media-type and (media-feature)"
+  href="style.css"
+/>
+```
+
+##### 二、媒体类型（Media Types）
+
+| 媒体类型       | 说明                     | 常用程度 |
+| -------------- | ------------------------ | -------- |
+| `all`          | 适用于所有设备（默认值） | ⭐⭐⭐   |
+| `screen`       | 用于电脑屏幕、平板、手机 | ⭐⭐⭐   |
+| `print`        | 用于打印预览和打印页面   | ⭐⭐     |
+| `speech`       | 用于屏幕阅读器           | ⭐       |
+| ~~`handheld`~~ | 已废弃，不建议使用       | ❌       |
+
+##### 三、常用媒体特性（Media Features）
+
+**1. 宽度相关**
+
+```css
+/* 最小宽度：当视口宽度 >= 768px 时生效 */
+@media (min-width: 768px) {
+  .container {
+    width: 750px;
+  }
+}
+
+/* 最大宽度：当视口宽度 <= 767px 时生效 */
+@media (max-width: 767px) {
+  .container {
+    width: 100%;
+  }
+}
+
+/* 精确宽度：当视口宽度 = 768px 时生效（不推荐） */
+@media (width: 768px) {
+  /* ... */
+}
+
+/* 宽度范围：推荐使用现代语法 */
+@media (768px <= width <= 1024px) {
+  .container {
+    width: 960px;
+  }
+}
+```
+
+**2. 高度相关**
+
+```css
+/* 最小高度 */
+@media (min-height: 600px) {
+  .sidebar {
+    position: fixed;
+  }
+}
+
+/* 最大高度 */
+@media (max-height: 500px) {
+  .header {
+    height: 50px;
+  }
+}
+```
+
+**3. 设备方向**
+
+```css
+/* 横屏模式（宽度 > 高度） */
+@media (orientation: landscape) {
+  .gallery {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 竖屏模式（高度 > 宽度） */
+@media (orientation: portrait) {
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+```
+
+**4. 设备像素比（分辨率）**
+
+```css
+/* 高清屏（Retina 屏幕） */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .logo {
+    background-image: url("logo@2x.png");
+  }
+}
+
+/* 超高清屏（3倍屏） */
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+  .logo {
+    background-image: url("logo@3x.png");
+  }
+}
+```
+
+**5. 颜色和显示能力**
+
+```css
+/* 支持悬停（判断是否有鼠标等精确指针设备） */
+@media (hover: hover) {
+  .button:hover {
+    background: #007bff;
+  }
+}
+
+/* 不支持悬停（触摸屏设备） */
+@media (hover: none) {
+  .button:active {
+    background: #007bff;
+  }
+}
+
+/* 支持任意指针（鼠标、触摸笔等） */
+@media (pointer: fine) {
+  .clickable {
+    padding: 5px;
+  }
+}
+
+/* 粗指针（手指触摸） */
+@media (pointer: coarse) {
+  .clickable {
+    padding: 15px; /* 增大点击区域 */
+  }
+}
+```
+
+**6. 暗黑模式（Dark Mode）**
+
+```css
+/* 浅色模式（默认） */
+@media (prefers-color-scheme: light) {
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+}
+
+/* 暗黑模式 */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1a1a1a;
+    color: #ffffff;
+  }
+}
+```
+
+**7. 减少动画（尊重用户偏好）**
+
+```css
+/* 用户未设置减少动画偏好（默认） */
+@media (prefers-reduced-motion: no-preference) {
+  .animate {
+    transition: all 0.3s ease;
+  }
+}
+
+/* 用户偏好减少动画 */
+@media (prefers-reduced-motion: reduce) {
+  .animate {
+    transition: none;
+  }
+}
+```
+
+##### 四、逻辑运算符
+
+**1. and（与）**
+
+```css
+/* 同时满足多个条件 */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .container {
+    width: 960px;
+  }
+}
+```
+
+**2. or（或）- 使用逗号 `,` 表示**
+
+```css
+/* 满足任意一个条件即可 */
+@media (max-width: 767px), (orientation: portrait) {
+  .sidebar {
+    display: none;
+  }
+}
+```
+
+**3. not（非）**
+
+```css
+/* 排除某个条件 */
+@media not screen and (min-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
+}
+```
+
+**4. only（仅）**
+
+```css
+/* 仅在支持媒体查询的浏览器中生效（用于兼容老浏览器） */
+@media only screen and (min-width: 768px) {
+  /* ... */
+}
+```
+
+##### 五、常见响应式断点（Breakpoints）
+
+```css
+/* 超小屏幕（手机，小于 576px） */
+@media (max-width: 575px) {
+  .container {
+    width: 100%;
+    padding: 0 15px;
+  }
+}
+
+/* 小屏幕（手机横屏、小平板，>= 576px） */
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+/* 中等屏幕（平板，>= 768px） */
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+  .nav {
+    display: flex;
+  }
+}
+
+/* 大屏幕（桌面，>= 992px） */
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+/* 超大屏幕（大桌面，>= 1200px） */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+
+/* 超超大屏幕（>= 1400px） */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
+  }
+}
+```
+
+##### 六、实用示例
+
+**1. 移动优先（Mobile First）策略**
+
+```css
+/* 默认样式（移动端） */
+.nav {
+  display: block;
+}
+
+.nav-item {
+  width: 100%;
+  padding: 10px;
+}
+
+/* 逐步适配更大屏幕 */
+@media (min-width: 768px) {
+  .nav {
+    display: flex;
+  }
+  .nav-item {
+    width: auto;
+  }
+}
+```
+
+**2. 桌面优先（Desktop First）策略**
+
+```css
+/* 默认样式（桌面端） */
+.sidebar {
+  width: 250px;
+  position: fixed;
+  left: 0;
+}
+
+/* 逐步适配更小屏幕 */
+@media (max-width: 991px) {
+  .sidebar {
+    width: 100%;
+    position: static;
+  }
+}
+```
+
+**3. 打印样式优化**
+
+```css
+@media print {
+  /* 隐藏不需要打印的元素 */
+  .no-print,
+  .nav,
+  .footer,
+  .ads {
+    display: none !important;
+  }
+
+  /* 优化打印样式 */
+  body {
+    font-size: 12pt;
+    color: #000;
+    background: #fff;
+  }
+
+  a::after {
+    content: " (" attr(href) ")"; /* 打印链接地址 */
+  }
+}
+```
+
+**4. 响应式图片**
+
+```css
+/* 小屏使用小图 */
+.hero {
+  background-image: url("hero-small.jpg");
+}
+
+/* 中等屏使用中图 */
+@media (min-width: 768px) {
+  .hero {
+    background-image: url("hero-medium.jpg");
+  }
+}
+
+/* 大屏使用大图 */
+@media (min-width: 1200px) {
+  .hero {
+    background-image: url("hero-large.jpg");
+  }
+}
+
+/* 高清屏使用 2x 图片 */
+@media (min-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
+  .hero {
+    background-image: url("hero-large@2x.jpg");
+  }
+}
+```
+
+**5. 容器查询（Container Queries）- 现代特性**
+
+```css
+/* 注意：需要浏览器支持 Container Queries */
+.card-container {
+  container-type: inline-size;
+  container-name: card;
+}
+
+/* 当容器宽度 >= 400px 时 */
+@container card (min-width: 400px) {
+  .card {
+    display: flex;
+    flex-direction: row;
+  }
+}
+```
+
+##### 七、最佳实践
+
+1. **优先使用 min-width（移动优先）**
+
+   - 移动优先策略更易维护，符合渐进增强原则
+   - 先写移动端样式，再用 `min-width` 逐步增强
+
+2. **避免重叠的断点**
+
+   ```css
+   /* ❌ 不推荐：断点重叠 */
+   @media (max-width: 768px) {
+   }
+   @media (min-width: 768px) {
+   }
+
+   /* ✅ 推荐：避免重叠 */
+   @media (max-width: 767px) {
+   }
+   @media (min-width: 768px) {
+   }
+   ```
+
+3. **使用 em 或 rem 单位定义断点**
+
+   ```css
+   /* 使用 em 更好地适配用户字体设置 */
+   @media (min-width: 48em) {
+     /* 768px / 16px = 48em */
+   }
+   ```
+
+4. **测试多种设备**
+
+   - 使用浏览器开发者工具的设备模拟功能
+   - 在真实设备上测试（手机、平板、桌面）
+
+5. **性能优化**
+   - 避免在媒体查询中加载过多资源
+   - 使用 `picture` 元素和 `srcset` 属性优化图片加载
+
+##### 八、浏览器兼容性
+
+| 特性                        | Chrome | Firefox | Safari | Edge | IE  |
+| --------------------------- | ------ | ------- | ------ | ---- | --- |
+| 基本媒体查询                | ✅     | ✅      | ✅     | ✅   | 9+  |
+| `prefers-color-scheme`      | 76+    | 67+     | 12.1+  | 79+  | ❌  |
+| `prefers-reduced-motion`    | 74+    | 63+     | 10.1+  | 79+  | ❌  |
+| `hover` / `pointer`         | 41+    | 64+     | 9+     | 12+  | ❌  |
+| Container Queries           | 105+   | 110+    | 16+    | 105+ | ❌  |
+| 范围语法 `(width >= 768px)` | 104+   | 102+    | 16.4+  | 104+ | ❌  |
+
+##### 九、调试技巧
+
+```css
+/* 使用特殊背景色快速识别当前断点 */
+body {
+  background: lightblue; /* 移动端 */
+}
+
+@media (min-width: 768px) {
+  body {
+    background: lightgreen; /* 平板 */
+  }
+}
+
+@media (min-width: 1200px) {
+  body {
+    background: lightyellow; /* 桌面 */
+  }
+}
+```
+
+##### 十、注意事项
+
+- 媒体查询不会增加 CSS 选择器的优先级
+- `@media` 规则内的样式仍然遵循正常的层叠规则
+- 使用 `@import` 结合媒体查询会影响性能，应避免使用
+- 移动设备需要在 HTML 中添加 viewport 元标签：
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+```
