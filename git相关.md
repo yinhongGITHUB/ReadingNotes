@@ -71,14 +71,14 @@ cherry pick
 
 #### 两种代码回退方式
 
-- git reset---
-  git reset --soft B：只回退 commit，代码内容还在（C、D 的更改会留在暂存区，无需 git add ，commit 消失）。
-  git reset --mixed B（默认）：回退 commit（C、D 的更改会留在工作区，需要 git add），代码内容还在工作区（未提交的更改还在）。
-  git reset --hard B：回退 commit、暂存区和工作区，C、D 的所有更改和代码都被彻底清除，什么都不剩。
+1. git reset
+   git reset --soft B：只回退 commit，代码内容还在（C、D 的更改会留在暂存区，无需 git add ，commit 消失）。
+   git reset --mixed B（默认）：回退 commit（C、D 的更改会留在工作区，需要 git add），代码内容还在工作区（未提交的更改还在）。
+   git reset --hard B：回退 commit、暂存区和工作区，C、D 的所有更改和代码都被彻底清除，什么都不剩。
 
-- git revert----
+2. git revert
 
-假设：
+- 例子一：
 
 C 提交里新增了变量 a。
 D 提交里用到了变量 a。
@@ -89,3 +89,14 @@ D 提交里用到了变量 a。
 如果 C 提交是“新增变量 a”，那么“反做”就是“删除变量 a”。
 如果 C 提交是“把变量 b 的值从 1 改成 2”，那么“反做”就是“把变量 b 的值从 2 改回 1”。
 如果 C 提交是“删除了一行代码”，那么“反做”就是“把那行代码加回来”。
+
+- 例子二：
+
+如果你 git revert a 时，a 的改动和后续的 b、c 有冲突，Git 会在生成新提交（d）时提示冲突，需要你手动解决冲突。
+
+处理流程如下：
+
+执行 git revert a，遇到冲突后，Git 会暂停操作，并标记冲突文件。
+你需要手动编辑冲突文件，解决冲突。
+解决后，执行 git add . 标记已解决。
+最后执行 git revert --continue 完成 revert 操作，生成新提交。
