@@ -65,23 +65,6 @@ b提交改了X文件第二行改为新2，
 git config --local merge.edit true 设置
 git config --local --get merge.edit 查看设置
 
-#### git 命令 cherry pick
-
-git cherry-pick 用于将其他分支上的某个（或多个）指定提交“复制”到当前分支，生成新的提交。常用于只想引入部分提交，而不是整体合并分支。
-
-常见用法：
-
-复制单个提交到当前分支：
-git cherry-pick <commit-hash>
-复制一段提交：
-git cherry-pick A^..C
-操作流程：
-
-用 git log 找到需要的提交 hash。
-切换到目标分支，执行 cherry-pick 命令。
-如果有冲突，Git 会提示你解决，解决后 git add .，再 git cherry-pick --continue。
-如果想中断操作，git cherry-pick --abort。
-
 #### 两种代码回退方式
 
 1. git reset
