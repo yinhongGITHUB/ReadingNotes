@@ -64,3 +64,28 @@ b提交改了X文件第二行改为新2，
 
 git config --local merge.edit true 设置
 git config --local --get merge.edit 查看设置
+
+#### git 命令
+
+cherry pick
+
+#### 两种代码回退方式
+
+- git reset---
+  git reset --soft B：只回退 commit，代码内容还在（C、D 的更改会留在暂存区，无需 git add ，commit 消失）。
+  git reset --mixed B（默认）：回退 commit（C、D 的更改会留在工作区，需要 git add），代码内容还在工作区（未提交的更改还在）。
+  git reset --hard B：回退 commit、暂存区和工作区，C、D 的所有更改和代码都被彻底清除，什么都不剩。
+
+- git revert----
+
+假设：
+
+C 提交里新增了变量 a。
+D 提交里用到了变量 a。
+你现在 git revert C，生成了 E 提交，E 会把 C 的更改（比如新增变量 a）“反做”，也就是把变量 a 删除。
+“反做”指定提交，意思是：把某个 commit（提交）里做的所有更改，全部反向操作一遍。
+举例说明：
+
+如果 C 提交是“新增变量 a”，那么“反做”就是“删除变量 a”。
+如果 C 提交是“把变量 b 的值从 1 改成 2”，那么“反做”就是“把变量 b 的值从 2 改回 1”。
+如果 C 提交是“删除了一行代码”，那么“反做”就是“把那行代码加回来”。
