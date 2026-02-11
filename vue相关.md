@@ -160,7 +160,6 @@ Vue3 的响应式系统核心是通过 ES6 的 Proxy 实现的。Proxy 可以拦
 **核心原理**：
 
 1. **数据代理**：
-
    - Vue3 使用 `Proxy` 包裹响应式对象（如 reactive、ref），拦截对对象属性的读取和设置。
    - 当读取属性时（get），进行依赖收集；当设置属性时（set），触发依赖更新。
 
@@ -388,29 +387,24 @@ defineProps({
 **核心配置属性**：
 
 1. **data-key**（必需）：
-
    - 类型：String
    - 每个数据项的唯一标识字段名（如 'id'）
    - 用于追踪每个列表项
 
 2. **data-sources**（必需）：
-
    - 类型：Array
    - 列表数据源
 
 3. **data-component**（必需）：
-
    - 类型：Component
    - 渲染每个列表项的组件
 
 4. **estimate-size**：
-
    - 类型：Number
    - 每个列表项的预估高度（单位：px）
    - 固定高度时设置准确值，动态高度时设置平均值
 
 5. **keeps**：
-
    - 类型：Number
    - 默认值：30
    - 可视区域保持渲染的项数量（缓冲区大小）
@@ -700,6 +694,7 @@ cache.set(key, { vnode, instance });
 3. 再次切换回来时，直接复用缓存中的 vnode 和实例，触发 activated 生命周期，并重新挂载到 DOM。
 4. 支持 max、include、exclude 属性，控制缓存数量和范围。超出 max 时采用 LRU 策略淘汰最久未使用的组件。
 5. 缓存的组件不会执行 unmounted，只会执行 deactivated/activated。
+6. 缓存的组件（被 KeepAlive 缓存）只在首次渲染时执行 mounted。后续切换回来不会再执行 mounted，而是执行 activated。只有第一次挂载到页面时才会触发 mounted。
 
 - 核心流程：
 
