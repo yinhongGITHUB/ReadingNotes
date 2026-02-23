@@ -130,7 +130,8 @@ function lazyReactive(target) {
       // 如果是对象且还没被代理，则递归代理
       // !isReactive(res)：判断是否还没被代理（Vue 内部用 WeakMap 或特殊属性实现）。
       if (isObject(res) && !isReactive(res)) {
-        return reactive(res); // 懒递归代理
+        return lazyReactive(res); // 懒递归代理
+        // 和上面效果一致 return reactive(res); // 懒递归代理
       }
       return res;
     },
