@@ -267,22 +267,79 @@ Vue3 的响应式系统核心是通过 ES6 的 Proxy 实现的。Proxy 可以拦
 **简单示例**：
 
 ```js
-const data = { count: 0 };
-const proxy = new Proxy(data, {
-  get(target, key, receiver) {
-    // 依赖收集逻辑
-    return Reflect.get(target, key, receiver);
-  },
-  set(target, key, value, receiver) {
-    // 依赖触发逻辑
-    const result = Reflect.set(target, key, value, receiver);
-    // 通知视图更新
-    return result;
-  },
+class Dep {
+  constructor() {
+    this.subscribers = new Set();
+  }
+  depend() {
+    if (Dep.target) {
+      this.subscribers.add(Dep.target);
+    }
+  }
+  notify() {
+    this.subscribers.forEach((sub) => sub());
+  }
+}
+
+Dep.target = null;
+
+function observe(fn) {
+  Dep.target = fn;
+  fn();
+  Dep.target = null;
+}
+
+function reactive(obj) {
+  const dep = new Dep();
+  return new Proxy(obj, {
+    get(target, key, receiver) {
+      dep.depend(); // 这里收集依赖
+      return Reflect.get(target, key, receiver);
+    },
+    set(target, key, value, receiver) {
+      const result = Reflect.set(target, key, value, receiver);
+      dep.notify(); // 这里触发依赖
+      return result;
+    },
+  });
+}
+
+// 用法
+const state = reactive({ count: 0 });
+
+observe(() => {
+  console.log("count changed:", state.count);
 });
+
+state.count++; // 会触发 observe 里的回调
 ```
 
 **总结**：
+在实际 Vue3 项目开发中，你通常不会手动写 observe 或 effect，而是这样写：
+
+然后直接在模板里用：
+
+```js
+<span>{{ count }}</span>
+```
+
+或者在 watch/computed 里用：
+
+```js
+watch(() => count.value, val => { ... });
+const double = computed(() => count.value * 2);
+
+
+```
+
+这些“副作用函数”是谁注册的？什么时候触发的？
+
+答案：Vue 框架自动帮你注册和触发副作用函数！
+
+组件渲染时，Vue 会自动把渲染函数（render）包装成副作用函数（effect），并在渲染时执行，收集依赖。
+computed、watch 这些 API 内部也会自动注册副作用函数。
+只要你在模板、computed、watch 里用到了 ref/响应式数据，Vue 会自动追踪依赖并在数据变化时重新执行相关副作用函数
+
 Vue3 通过 Proxy 实现了对对象的深度、全面的拦截，结合依赖收集和触发机制，实现了高效、灵活的响应式系统和双向绑定。
 
 ---
