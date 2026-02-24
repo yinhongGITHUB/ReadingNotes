@@ -369,6 +369,13 @@ Vue3 生命周期执行顺序（含 setup）：
 - **methods、computed、watch**：this 指向组件实例，可访问所有 data/props/methods/computed
 - **模板**：直接用变量名访问 data
 
+#### vue2 拿到this、this.data、获取dom的生命周期
+
+- beforeCreate 可以拿到this，但拿不到 data
+- created 可以拿到data，但还没有 this.$el
+- beforeMount 可以拿到 this.$el，但还没有插入到页面
+- mounted 可以拿到 this.$el，并且已经插入到页面，可以安全的访问**DOM**元素了（this.$el 是 Vue 组件实例的根 DOM 元素的引用）
+
 #### vue3-smooth-dnd vue3 中组件拖拽，也可以互相拖拽
 
 ```js
