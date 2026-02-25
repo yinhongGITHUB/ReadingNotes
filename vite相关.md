@@ -147,7 +147,7 @@ vite 里面
 
 #### vite 的构建过程，实现原理？
 
-##### 开发构建（vite 本地开发服务）
+##### 开发构建（vite 本地开发服务）（即 npm run dev 用的是 esbuild）
 
 1. 项目初始化：读取并解析 vite.confing.js 配置文件
 2. 启动开发服务：基于 express 启动 http 服务器
@@ -156,16 +156,19 @@ vite 里面
 5. 热模块替换（HMR）：通过 WebSocket 实现模块的局部更新
 6. Source Maps：自动生成 Source Maps，便于调试（Source Maps 是一种将编译后的代码（如压缩后的 JavaScript、转译后的 TypeScript/ESNext、CSS 预处理器生成的 CSS）映射回原始源代码的技术。）
 
-##### source map的取值
+##### source map 的取值
+
+浏览器识别到引用注释（#sourceMappingURL=...）会自动加载对应的 .map 文件。
 
 1. true
    生成独立的 .map 文件，并在打包产物中通过注释引用。适合开发和调试，浏览器能自动加载 source map，还原源码。
-
 2. inline
    将 source map 以 data URI 的形式内联到打包后的 JS/CSS 文件中，不生成单独的 .map 文件。适合本地调试，方便单文件分发，但体积会变大。
-
+   true 和 inline 都会生成注释路径（存放在 js 文件的最后 有一个 **#sourceMappingURL=xxx**,是一个**文件路径** ）
 3. hidden
-   生成独立的 .map 文件，但不会在产物中加注释引用。浏览器不会自动加载，只能手动加载 source map。适合线上环境，便于定位问题但不暴露源码路径给用户。
+   生成独立的 .map 文件，但不会在产物中加**引用注释**。浏览器不会自动加载，只能手动加载 source map。适合线上环境，便于定位问题但不暴露源码路径给用户。
+4. false
+   不生成 source map 文件，也不添加任何引用注释。
 
 #### esbuild 的具体解析过程
 
@@ -190,14 +193,14 @@ vite 里面
 - 修改时，只需操作树上的节点（如增删改某个分支），不需要处理复杂的字符串拼接和语法细节，避免语法错误。
 - 优化时，可以精准定位和移除无用代码、重组结构，保证代码逻辑正确。
 
-##### 线上构建
+##### 线上构建（即 npm run build 用的是 rollup） 这一过程没有把代码转化成 AST
 
 项目初始化：读取并解析 vite.confing.js 配置文件
 入口解析：使用 Rollup 构建模块依赖图
 插件处理：通过插件系统进行代码转换、压缩和资源处理（例如插件：vite-plugin-vue）
 Tree Shanking：移除未使用的代码
 代码拆分：将代码拆分成多个模块
-生成输出：打包生成最终的输出文件
+生成输出：打包生成最终的输出文件（Scope Hoisting 发挥作用）
 资源优化：css 和静态资源
 缓存策略：未静态资源添加内容哈希，便于缓存管理
 
@@ -308,6 +311,18 @@ export default defineConfig({
           react: "React",
         },
       },
+      // 5. CSS 压缩相关配置
+      css: {
+        // 是否压缩 CSS，默认 true
+        minify: true,
+        // minify 的可选值：
+        // true   —— 开启压缩（默认，推荐）
+        // false  —— 关闭压缩
+        // 'esbuild' —— 使用 esbuild 进行压缩（速度快，推荐）
+        // 'terser'  —— 使用 terser 进行压缩（兼容性好，适合特殊场景）
+        // 'cssnano' —— 使用 cssnano 进行压缩（部分场景可用）
+        // 一般不用手动设置，默认即可。
+      },
     },
   },
 });
@@ -322,14 +337,17 @@ export default defineConfig({
    - **单页应用**：可以不配置，Vite 会自动从 index.html 中的 `<script>` 标签读取入口
    - **库模式**：配置 JS/TS 入口文件（如 `'./src/index.ts'`）
 2. **external（外部依赖）**
+
    - 指定不打包进 bundle 的依赖（如 CDN 引入的库）
    - 常用于库模式开发
 
 3. **output.manualChunks（手动分包）**
+
    - Vite 中最常用的性能优化配置
    - 可将第三方库、公共模块单独打包，提升缓存效率
 
 4. **output.entryFileNames / chunkFileNames / assetFileNames**
+
    - 自定义输出文件的命名规则
    - `[name]`：文件名，`[hash]`：内容哈希，`[ext]`：扩展名
 
@@ -354,3 +372,76 @@ export default defineConfig({
 ?worker：以 Web Worker 方式导入 JS/TS 文件
 ?webp：图片转为 webp 格式（部分插件支持）
 ?component：将 SVG 作为 Vue 组件导入（需插件）
+
+#### external 和 globals 以及 external 和 rollup-plugin-external-globals
+
+**1. external 和 globals 的作用**
+
+- external 用于指定哪些依赖不被打包进最终产物，而是作为外部依赖（比如通过 CDN 或全局变量引入）。
+- globals 只在 UMD/IIFE 格式下有效，用于指定外部依赖在全局环境下的变量名（如 window.Vue）。
+
+**2. 配置示例与打包结果**
+
+- UMD/IIFE 场景（output.globals 有效）：
+
+  ```js
+  // 配置
+  external: ['vue'],
+  output: { globals: { vue: 'Vue' } }
+  // 打包结果 global 指的就是 windows
+  (function(global, factory) {
+    factory(global.Vue);
+  })(this, function(Vue) { ... });
+  ```
+
+- ESM 场景（output.globals 无效）：
+
+  ```js
+  // 配置
+  external: ['vue'],
+  output: { format: 'es', globals: { vue: 'Vue' } }
+  // 打包结果
+  import Vue from 'vue';
+  // 这里不会变成 window.Vue
+  ```
+
+- 总结：output.globals 只对 UMD/IIFE 格式有效，对 ESM 格式无用。
+
+**3. rollup-plugin-external-globals 的作用**
+
+- 如果你想在 ESM 格式下也能将某些依赖映射为全局变量（比如 import Vue from 'vue' 变成 const Vue = window.Vue），可以用 rollup-plugin-external-globals 插件。
+- 该插件会把 import 语句转为访问全局变量，适合 CDN 场景下的 ESM 构建。
+
+  ```js
+  import externalGlobals from "rollup-plugin-external-globals";
+  export default {
+    // ...其他配置
+    plugins: [
+      externalGlobals({
+        vue: "Vue",
+      }),
+    ],
+  };
+  ```
+
+  打包后：
+
+  ```js
+  const Vue = window.Vue;
+  ```
+
+**4. 总结对比**
+
+- external + globals：适用于 UMD/IIFE 格式，ESM 格式无效。
+- external + rollup-plugin-external-globals：可让 ESM 格式下的 import 也能映射为全局变量，适合 CDN 场景。
+
+**5. 注意**
+
+无论采用哪种 external 方案（包括 UMD/IIFE 或 ESM + external-globals），都必须确保在 index.html 里通过 script 标签提前引入外部依赖（如 Vue、React 等），例如：
+
+```js
+// 以 Vue 为例，需在 index.html 里添加
+<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+```
+
+否则，打包产物运行时会找不到全局变量（如 window.Vue），导致报错。
