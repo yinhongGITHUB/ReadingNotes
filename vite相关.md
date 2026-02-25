@@ -360,3 +360,76 @@ export default defineConfig({
 ?worker：以 Web Worker 方式导入 JS/TS 文件
 ?webp：图片转为 webp 格式（部分插件支持）
 ?component：将 SVG 作为 Vue 组件导入（需插件）
+
+#### external 和 globals 以及 external 和 rollup-plugin-external-globals
+
+**1. external 和 globals 的作用**
+
+- external 用于指定哪些依赖不被打包进最终产物，而是作为外部依赖（比如通过 CDN 或全局变量引入）。
+- globals 只在 UMD/IIFE 格式下有效，用于指定外部依赖在全局环境下的变量名（如 window.Vue）。
+
+**2. 配置示例与打包结果**
+
+- UMD/IIFE 场景（output.globals 有效）：
+
+  ```js
+  // 配置
+  external: ['vue'],
+  output: { globals: { vue: 'Vue' } }
+  // 打包结果 global 指的就是 windows
+  (function(global, factory) {
+    factory(global.Vue);
+  })(this, function(Vue) { ... });
+  ```
+
+- ESM 场景（output.globals 无效）：
+
+  ```js
+  // 配置
+  external: ['vue'],
+  output: { format: 'es', globals: { vue: 'Vue' } }
+  // 打包结果
+  import Vue from 'vue';
+  // 这里不会变成 window.Vue
+  ```
+
+- 总结：output.globals 只对 UMD/IIFE 格式有效，对 ESM 格式无用。
+
+**3. rollup-plugin-external-globals 的作用**
+
+- 如果你想在 ESM 格式下也能将某些依赖映射为全局变量（比如 import Vue from 'vue' 变成 const Vue = window.Vue），可以用 rollup-plugin-external-globals 插件。
+- 该插件会把 import 语句转为访问全局变量，适合 CDN 场景下的 ESM 构建。
+
+  ```js
+  import externalGlobals from "rollup-plugin-external-globals";
+  export default {
+    // ...其他配置
+    plugins: [
+      externalGlobals({
+        vue: "Vue",
+      }),
+    ],
+  };
+  ```
+
+  打包后：
+
+  ```js
+  const Vue = window.Vue;
+  ```
+
+**4. 总结对比**
+
+- external + globals：适用于 UMD/IIFE 格式，ESM 格式无效。
+- external + rollup-plugin-external-globals：可让 ESM 格式下的 import 也能映射为全局变量，适合 CDN 场景。
+
+**5. 注意**
+
+无论采用哪种 external 方案（包括 UMD/IIFE 或 ESM + external-globals），都必须确保在 index.html 里通过 script 标签提前引入外部依赖（如 Vue、React 等），例如：
+
+```js
+// 以 Vue 为例，需在 index.html 里添加
+<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+```
+
+否则，打包产物运行时会找不到全局变量（如 window.Vue），导致报错。
