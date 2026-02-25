@@ -162,7 +162,6 @@ vite 里面
 
 1. true
    生成独立的 .map 文件，并在打包产物中通过注释引用。适合开发和调试，浏览器能自动加载 source map，还原源码。
-
 2. inline
    将 source map 以 data URI 的形式内联到打包后的 JS/CSS 文件中，不生成单独的 .map 文件。适合本地调试，方便单文件分发，但体积会变大。
    true 和 inline 都会生成注释路径（存放在 js 文件的最后 有一个 **#sourceMappingURL=xxx**,是一个**文件路径** ）
