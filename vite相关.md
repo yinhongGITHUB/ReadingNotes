@@ -147,7 +147,7 @@ vite 里面
 
 #### vite 的构建过程，实现原理？
 
-##### 开发构建（vite 本地开发服务）
+##### 开发构建（vite 本地开发服务）（即 npm run dev 用的是 esbuild）
 
 1. 项目初始化：读取并解析 vite.confing.js 配置文件
 2. 启动开发服务：基于 express 启动 http 服务器
@@ -165,7 +165,7 @@ vite 里面
 
 2. inline
    将 source map 以 data URI 的形式内联到打包后的 JS/CSS 文件中，不生成单独的 .map 文件。适合本地调试，方便单文件分发，但体积会变大。
-   true 和 inline 都会生成注释路径（存放在 js 文件的最后 有一个 **#sourceMappingURL=xxx**,是一个文件路径 ）
+   true 和 inline 都会生成注释路径（存放在 js 文件的最后 有一个 **#sourceMappingURL=xxx**,是一个**文件路径** ）
 3. hidden
    生成独立的 .map 文件，但不会在产物中加**引用注释**。浏览器不会自动加载，只能手动加载 source map。适合线上环境，便于定位问题但不暴露源码路径给用户。
 4. false
@@ -194,7 +194,7 @@ vite 里面
 - 修改时，只需操作树上的节点（如增删改某个分支），不需要处理复杂的字符串拼接和语法细节，避免语法错误。
 - 优化时，可以精准定位和移除无用代码、重组结构，保证代码逻辑正确。
 
-##### 线上构建
+##### 线上构建（即 npm run build 用的是 rollup）
 
 项目初始化：读取并解析 vite.confing.js 配置文件
 入口解析：使用 Rollup 构建模块依赖图
