@@ -311,6 +311,18 @@ export default defineConfig({
           react: "React",
         },
       },
+      // 5. CSS 压缩相关配置
+      css: {
+        // 是否压缩 CSS，默认 true
+        minify: true,
+        // minify 的可选值：
+        // true   —— 开启压缩（默认，推荐）
+        // false  —— 关闭压缩
+        // 'esbuild' —— 使用 esbuild 进行压缩（速度快，推荐）
+        // 'terser'  —— 使用 terser 进行压缩（兼容性好，适合特殊场景）
+        // 'cssnano' —— 使用 cssnano 进行压缩（部分场景可用）
+        // 一般不用手动设置，默认即可。
+      },
     },
   },
 });
