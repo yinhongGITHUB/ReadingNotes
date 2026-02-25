@@ -156,16 +156,20 @@ vite 里面
 5. 热模块替换（HMR）：通过 WebSocket 实现模块的局部更新
 6. Source Maps：自动生成 Source Maps，便于调试（Source Maps 是一种将编译后的代码（如压缩后的 JavaScript、转译后的 TypeScript/ESNext、CSS 预处理器生成的 CSS）映射回原始源代码的技术。）
 
-##### source map的取值
+##### source map 的取值
+
+浏览器识别到引用注释（#sourceMappingURL=...）会自动加载对应的 .map 文件。
 
 1. true
    生成独立的 .map 文件，并在打包产物中通过注释引用。适合开发和调试，浏览器能自动加载 source map，还原源码。
 
 2. inline
    将 source map 以 data URI 的形式内联到打包后的 JS/CSS 文件中，不生成单独的 .map 文件。适合本地调试，方便单文件分发，但体积会变大。
-
+   true 和 inline 都会生成注释路径（存放在 js 文件的最后 有一个 **#sourceMappingURL=xxx**,是一个文件路径 ）
 3. hidden
-   生成独立的 .map 文件，但不会在产物中加注释引用。浏览器不会自动加载，只能手动加载 source map。适合线上环境，便于定位问题但不暴露源码路径给用户。
+   生成独立的 .map 文件，但不会在产物中加**引用注释**。浏览器不会自动加载，只能手动加载 source map。适合线上环境，便于定位问题但不暴露源码路径给用户。
+4. false
+   不生成 source map 文件，也不添加任何引用注释。
 
 #### esbuild 的具体解析过程
 
@@ -322,14 +326,17 @@ export default defineConfig({
    - **单页应用**：可以不配置，Vite 会自动从 index.html 中的 `<script>` 标签读取入口
    - **库模式**：配置 JS/TS 入口文件（如 `'./src/index.ts'`）
 2. **external（外部依赖）**
+
    - 指定不打包进 bundle 的依赖（如 CDN 引入的库）
    - 常用于库模式开发
 
 3. **output.manualChunks（手动分包）**
+
    - Vite 中最常用的性能优化配置
    - 可将第三方库、公共模块单独打包，提升缓存效率
 
 4. **output.entryFileNames / chunkFileNames / assetFileNames**
+
    - 自定义输出文件的命名规则
    - `[name]`：文件名，`[hash]`：内容哈希，`[ext]`：扩展名
 
