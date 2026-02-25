@@ -37,3 +37,21 @@ process.on("unhandledRejection", (reason) => {
 - unhandledRejection：
 
 当 Promise 被 reject 后没有 .catch() 处理时，会触发该事件。可以用 process.on('unhandledRejection', handler) 监听，捕获未处理的异步异常。适合做全局监控和日志，但同样建议修复代码逻辑，避免依赖兜底。
+
+#### node.js 的全局对象
+
+process 是 Node.js 的全局对象，常用属性和方法有：
+
+process.env：环境变量对象
+process.argv：命令行参数数组
+process.cwd()：当前工作目录
+process.exit([code])：退出进程
+process.pid：当前进程 ID
+process.platform：操作系统平台（如 'win32', 'linux'）
+process.version：Node.js 版本
+process.versions：依赖库版本信息
+process.memoryUsage()：内存使用情况
+process.uptime()：进程运行时间
+process.nextTick()：下一个事件循环执行函数
+process.stdin / process.stdout / process.stderr：标准输入/输出/错误流
+process.on(event, callback)：监听进程事件（如 'exit', 'uncaughtException'）
