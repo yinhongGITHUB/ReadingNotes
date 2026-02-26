@@ -380,6 +380,10 @@ export default defineConfig({
 - external 用于指定哪些依赖不被打包进最终产物，而是作为外部依赖（比如通过 CDN 或全局变量引入）。
 - globals 只在 UMD/IIFE 格式下有效，用于指定外部依赖在全局环境下的变量名（如 window.Vue）。
 
+**简单来说：**
+external：决定“打不打包”
+globals：决定“UMD/IIFE 下外部包叫啥全局名”
+
 **2. 配置示例与打包结果**
 
 - UMD/IIFE 场景（output.globals 有效）：
