@@ -849,7 +849,7 @@ cache.set(key, { vnode, instance });
 ```
 
 1. 首次渲染被包裹的组件时，会将其 vnode 和实例存入缓存，并挂载到页面。
-2. 当切换到其他组件时，被缓存的组件不会被销毁，而是触发 deactivated 生命周期，并从 DOM 移除，但实例和状态保留在内存。
+2. 当切换到其他组件时，被缓存的组件不会被销毁，而是触发 deactivated 生命周期，并从 DOM 移除，但实例和状态（响应式数据等）保留在内存。
 3. 再次切换回来时，直接复用缓存中的 vnode 和实例，触发 activated 生命周期，并重新挂载到 DOM。
 4. 支持 max、include、exclude 属性，控制缓存数量和范围。超出 max 时采用 LRU 策略淘汰最久未使用的组件。
 5. 缓存的组件不会执行 unmounted，只会执行 deactivated/activated。
