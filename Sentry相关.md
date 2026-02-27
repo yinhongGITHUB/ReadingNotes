@@ -66,6 +66,7 @@ npm install @sentry/vue
 
 ```js
 import * as Sentry from "@sentry/vue";
+// npm install @sentry/tracing
 import { BrowserTracing } from "@sentry/tracing";
 import Vue from "vue";
 import App from "./App.vue";
