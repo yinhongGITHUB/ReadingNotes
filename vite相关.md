@@ -380,6 +380,10 @@ export default defineConfig({
 - external 用于指定哪些依赖不被打包进最终产物，而是作为外部依赖（比如通过 CDN 或全局变量引入）。
 - globals 只在 UMD/IIFE 格式下有效，用于指定外部依赖在全局环境下的变量名（如 window.Vue）。
 
+**简单来说：**
+external：决定“打不打包”
+globals：决定“UMD/IIFE 下外部包叫啥全局名”
+
 **2. 配置示例与打包结果**
 
 - UMD/IIFE 场景（output.globals 有效）：
@@ -445,3 +449,55 @@ export default defineConfig({
 ```
 
 否则，打包产物运行时会找不到全局变量（如 window.Vue），导致报错。
+
+#### Vite 插件的钩子函数
+
+1. 通用生命周期钩子（部分与 Rollup 兼容）
+   config(config, env)：修改 Vite 配置
+   configResolved(resolvedConfig)：配置解析后调用
+   options(options)：rollup 配置处理
+   buildStart(options)：构建开始
+   resolveId(source, importer, options)：自定义模块解析
+   load(id)：自定义加载文件内容
+   transform(code, id)：自定义代码转换
+   buildEnd(error)：构建结束
+   closeBundle()：打包结束
+2. 开发服务器专用钩子
+   configureServer(server)：配置 dev server，可注册中间件
+   handleHotUpdate(ctx)：自定义 HMR 行为
+3. 资源处理相关
+   resolveDynamicImport(specifier, importer)：动态 import 解析
+   renderChunk(code, chunk, options)：自定义 chunk 处理
+   generateBundle(options, bundle, isWrite)：生成 bundle 阶段
+
+```js
+export default function myPlugin() {
+  return {
+    name: "my-plugin",
+    config(config, env) {
+      /* ... */
+    },
+    configResolved(resolvedConfig) {
+      /* ... */
+    },
+    resolveId(source, importer) {
+      /* ... */
+    },
+    load(id) {
+      /* ... */
+    },
+    transform(code, id) {
+      /* ... */
+    },
+    configureServer(server) {
+      /* ... */
+    },
+    handleHotUpdate(ctx) {
+      /* ... */
+    },
+    // ...其他钩子
+  };
+}
+```
+
+详细钩子和参数可查阅官方文档：https://cn.vitejs.dev/guide/api-plugin.html

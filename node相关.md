@@ -55,3 +55,70 @@ process.uptime()：进程运行时间
 process.nextTick()：下一个事件循环执行函数
 process.stdin / process.stdout / process.stderr：标准输入/输出/错误流
 process.on(event, callback)：监听进程事件（如 'exit', 'uncaughtException'）
+
+#### node.js 如何处理跨域
+
+最常见有两种方案：
+
+1. 使用 `cors` 中间件（简单）
+
+```js
+import express from "express";
+import cors from "cors";
+
+const app = express();
+
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://your-domain.com"],
+    credentials: true,
+  })
+);
+```
+
+2. 手动加响应头 + 白名单（可控）
+
+```js
+import express from "express";
+
+const app = express();
+const whitelist = ["http://localhost:3000", "https://your-domain.com"];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (whitelist.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+```
+
+**一句话总结：**
+
+- 想省事：用 `cors`。
+- 想精细控制：手动响应头 + 白名单。
+
+**常见坑：**
+
+- 当 `Access-Control-Allow-Credentials: true` 时，`Access-Control-Allow-Origin` 不能是 `*`。
+- 必须返回具体源（如请求头里的 `Origin`），否则浏览器会拦截。
+
+```js
+// 错误写法（会被浏览器拦截）
+res.setHeader("Access-Control-Allow-Origin", "*");
+res.setHeader("Access-Control-Allow-Credentials", "true");
+
+// 正确写法（按白名单返回具体 Origin）
+res.setHeader("Access-Control-Allow-Origin", origin);
+res.setHeader("Access-Control-Allow-Credentials", "true");
+```

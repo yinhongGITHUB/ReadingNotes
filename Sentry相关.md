@@ -41,8 +41,54 @@
 
 - 结合异常日志、性能数据、用户操作轨迹，快速定位白屏、卡顿、慢接口等问题根因。
 
-## 10. Sentry 的优缺点、与其他监控方案（如 Fundebug、阿里ARMS）对比？
+## 10. Sentry 的优缺点、与其他监控方案（如 Fundebug、阿里 ARMS）对比？
 
 - 优点：开源、功能全、支持多端、可自建、社区活跃。
 - 缺点：部分高级功能需付费，自建运维成本较高。
 - 对比：Sentry 更通用，Fundebug/ARMS 更本土化，适合不同企业需求。
+
+# sentry 使用
+
+1. 注册账号并创建项目
+   访问 https://sentry.io/ 注册账号，创建新项目，选择前端（如 JavaScript、Vue、React）或后端（Node.js）类型，获取 dsn 地址。
+
+2. 安装 Sentry SDK
+   前端项目（以 Vue 为例）：
+
+```js
+npm install @sentry/vue
+```
+
+3. 初始化 Sentry
+   在入口文件（如 main.js）添加：
+
+**dsn 地址：**是 Sentry 分配给你项目的唯一数据上报地址
+
+```js
+import * as Sentry from "@sentry/vue";
+// npm install @sentry/tracing
+import { BrowserTracing } from "@sentry/tracing";
+import Vue from "vue";
+import App from "./App.vue";
+
+// 只在生产环境开启
+if (process.env.NODE_ENV === "production") {
+  Sentry.init({
+    app: Vue,
+    dsn: "你的dsn地址",
+    integrations: [new BrowserTracing()],
+    // 没有 integrations: [new BrowserTracing()]，Sentry 只会采集错误日志（即自动捕获代码执行过程中的同步和异步错误），不会采集性能数据。
+    // 加上这行后，Sentry 会自动监控页面性能、慢操作、卡顿等，帮助你分析线上性能瓶颈。
+    tracesSampleRate: 1.0, // 性能采样率，0~1
+    environment: "production", // 环境名
+    release: "v1.0.0", // 版本号
+    ignoreErrors: ["ResizeObserver loop limit exceeded", "Script error"], // 忽略错误
+    beforeSend(event, hint) {
+      // 自定义上报前处理
+      // 可以对 event 做过滤、脱敏等
+      return event;
+    },
+    attachStacktrace: true, // 附加堆栈
+  });
+}
+```

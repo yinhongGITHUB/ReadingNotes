@@ -57,6 +57,16 @@ let b: activeNameEnum;
 
 ```
 
+#### ts 索引签名的三种类型
+
+```js
+interface Example {
+  [key: string]: string;
+  [key: number]: string;
+  [key: symbol]: string;
+}
+```
+
 #### ts 的索引签名
 
 TypeScript 要求：数字索引签名的值类型，必须是字符串索引签名值类型的子类型。
@@ -71,16 +81,6 @@ interface Example {
 }
 obj[1]其实会去拿obj["1"],也就是说，输入obj[1]和obj["1"]拿到的值是同一个，但是，做类型检查时，obj["1"]是Animal，obj[1]是Dog，又由于拿obj[1]会被转化成obj["1"]，
 也就意味着 Dog必须是Animal的子类型
-```
-
-#### ts 索引签名的三种类型
-
-```js
-interface Example {
-  [key: string]: string;
-  [key: number]: string;
-  [key: symbol]: string;
-}
 ```
 
 #### 抽象类和抽象方法
