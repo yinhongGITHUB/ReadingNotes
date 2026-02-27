@@ -1,3 +1,13 @@
+#### 渲染顺序
+
+同一组件：script → template → style
+父组件 A 里面有两个子组件 B C， B 组件在 C 组件的上面
+创建顺序（setup/created）：A → B → C
+挂载顺序（mounted）：B → C → A
+卸载顺序（unmounted）：C → B → A
+父组件销毁时，会先销毁所有子组件，再销毁自己。
+而对于同一层级的多个子组件（如 B、C），Vue 会按“渲染顺序的逆序”依次销毁，即先销毁后渲染的组件。
+
 #### vue3 的性能提升
 
 1. diff 算法优化
@@ -15,6 +25,7 @@
 2. **双端指针（Head/Tail）**  
    维护旧列表和新列表的头尾指针，快速命中常见的头/尾插入、删除、移动场景。  
    主要场景：
+
    - 旧头 == 新头
    - 旧尾 == 新尾
    - 旧头 == 新尾（节点移到尾部）
@@ -233,6 +244,7 @@ Vue3 的响应式系统核心是通过 ES6 的 Proxy 实现的。Proxy 可以拦
 **核心原理**：
 
 1. **数据代理**：
+
    - Vue3 使用 `Proxy` 包裹响应式对象（如 reactive、ref），拦截对对象属性的读取和设置。
    - 当读取属性时（get），进行依赖收集；当设置属性时（set），触发依赖更新。
 
@@ -492,24 +504,29 @@ defineProps({
 **核心配置属性**：
 
 1. **data-key**（必需）：
+
    - 类型：String
    - 每个数据项的唯一标识字段名（如 'id'）
    - 用于追踪每个列表项
 
 2. **data-sources**（必需）：
+
    - 类型：Array
    - 列表数据源
 
 3. **data-component**（必需）：
+
    - 类型：Component
    - 渲染每个列表项的组件
 
 4. **estimate-size**：
+
    - 类型：Number
    - 每个列表项的预估高度（单位：px）
    - 固定高度时设置准确值，动态高度时设置平均值
 
 5. **keeps**：
+
    - 类型：Number
    - 默认值：30
    - 可视区域保持渲染的项数量（缓冲区大小）
@@ -753,10 +770,10 @@ Vue3 生命周期执行顺序（含 setup）：
 - **methods、computed、watch**：this 指向组件实例，可访问所有 data/props/methods/computed
 - **模板**：直接用变量名访问 data
 
-#### vue2 拿到this、this.data、获取dom的生命周期
+#### vue2 拿到 this、this.data、获取 dom 的生命周期
 
-- beforeCreate 可以拿到this，但拿不到 data
-- created 可以拿到data，但还没有 this.$el
+- beforeCreate 可以拿到 this，但拿不到 data
+- created 可以拿到 data，但还没有 this.$el
 - beforeMount 可以拿到 this.$el，但还没有插入到页面
 - mounted 可以拿到 this.$el，并且已经插入到页面，可以安全的访问**DOM**元素了（this.$el 是 Vue 组件实例的根 DOM 元素的引用）
 
