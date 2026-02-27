@@ -288,6 +288,49 @@ JWT（JSON Web Token）是一种用于安全传递信息的开放标准（RFC 75
 
 - 缺点：token 过期前无法主动失效，敏感信息需加密处理。
 
+##### 如何让 JWT 无感续期（自动续期方案）
+
+JWT 由于无状态，token 过期后默认无法直接续期。为了让用户“无感续期”，常用的做法是配合 Refresh Token 实现自动续期，流程如下：
+
+1. 登录时，后端签发短有效期的 Access Token 和较长有效期的 Refresh Token。
+2. 前端每次请求接口时，带上 Access Token。
+3. 如果 Access Token 过期，后端返回 401（未授权）或自定义错误码。
+4. 前端收到 401 后，自动用 Refresh Token 请求后端的“刷新 token”接口，获取新的 Access Token（和新的 Refresh Token）。
+5. 刷新成功后，前端自动重试原始请求，用户无感知。
+6. 如果 Refresh Token 也过期，则跳转登录页，要求用户重新登录。
+
+实现要点：
+
+- 刷新 token 的接口要有严格的安全校验，防止被盗用。
+- Refresh Token 建议只存 httpOnly Cookie，防止 XSS。
+- 前端可用 axios 拦截器等方式自动处理 401 并刷新 token。
+
+伪代码示例：
+
+```js
+// axios 响应拦截器
+axios.interceptors.response.use(null, async (error) => {
+  if (error.response.status === 401) {
+    // 尝试用 refresh token 换新 token
+    const newToken = await refreshToken();
+    if (newToken) {
+      // 更新 token 并重试原请求
+      setToken(newToken);
+      error.config.headers["Authorization"] = "Bearer " + newToken;
+      return axios(error.config);
+    } else {
+      // refresh token 也失效，跳转登录
+      redirectToLogin();
+    }
+  }
+  return Promise.reject(error);
+});
+```
+
+这样用户在 Access Token 过期时，前端自动续期并重试请求，用户体验无感知。
+
+---
+
 ##### jwt 前两部分 header 和 payload
 
 JWT 的前两部分（Header 和 Payload）其实不是“加密”，而是“编码”——通常用 Base64Url 编码。前端拿到 JWT 后，可以直接用 Base64 解码得到明文内容，无需密钥。
