@@ -290,22 +290,13 @@ JWT（JSON Web Token）是一种用于安全传递信息的开放标准（RFC 75
 
 ##### 如何让 JWT 无感续期（自动续期方案）
 
-JWT 由于无状态，token 过期后默认无法直接续期。为了让用户“无感续期”，常用的做法是配合 Refresh Token 实现自动续期，流程如下：
+无感续期流程：
 
-1. 登录时，后端签发短有效期的 Access Token 和较长有效期的 Refresh Token。
-2. 前端每次请求接口时，带上 Access Token。
-3. 如果 Access Token 过期，后端返回 401（未授权）或自定义错误码。
-4. 前端收到 401 后，自动用 Refresh Token 请求后端的“刷新 token”接口，获取新的 Access Token（和新的 Refresh Token）。
-5. 刷新成功后，前端自动重试原始请求，用户无感知。
-6. 如果 Refresh Token 也过期，则跳转登录页，要求用户重新登录。
+1. 登录时，后端返回短期 Access Token 和长期 Refresh Token。
+2. Access Token 过期时，前端自动用 Refresh Token 换新 Token 并重试原请求。
+3. Refresh Token 也过期则跳转登录。
 
-实现要点：
-
-- 刷新 token 的接口要有严格的安全校验，防止被盗用。
-- Refresh Token 建议只存 httpOnly Cookie，防止 XSS。
-- 前端可用 axios 拦截器等方式自动处理 401 并刷新 token。
-
-伪代码示例：
+代码示例：
 
 ```js
 // axios 响应拦截器
