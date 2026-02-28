@@ -223,36 +223,52 @@ console.log(w);
 
 ## 5. 怎么画图片和操作像素？
 
-### 5.1 画图片
+### 5.1 画图片（drawImage）
+
+`drawImage` 是 canvas 里画图片的核心方法，支持三种调用形式，source（s 前缀）表示图片上的区域，destination（d 前缀）表示画布上的区域：
 
 ```js
+// ① 3参数：原尺寸画到画布指定位置
+// ctx.drawImage(img, dx, dy)
+// 把图片按原始尺寸，画到画布的 (dx, dy) 处
+
+// ② 5参数：画到画布并缩放
+// ctx.drawImage(img, dx, dy, dw, dh)
+// 把整张图片缩放成 dw×dh 大小，画到画布 (dx, dy) 处
+
+// ③ 9参数：先裁剪图片，再画到画布（最灵活）
+// ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
+// s 前缀 = source，表示图片（源）上的裁剪区域
+// d 前缀 = destination，表示要画到画布（目标）的位置和大小
+//
+// 参数说明：
+//   img     —— 图片源，可以是 Image / Canvas / Video 对象
+//   sx, sy  —— 裁剪起点（在图片上的左上角坐标）
+//   sw, sh  —— 裁剪宽高（在图片上截多大的区域）
+//   dx, dy  —— 绘制起点（画到画布上的左上角坐标）
+//   dw, dh  —— 绘制宽高（在画布上占多大，可以和 sw/sh 不同，会自动缩放）
+
+// 注意：img 必须已加载完成才能绘制，否则画出来是空的
 const img = new Image();
 img.src = "https://example.com/image.png";
 img.onload = function () {
-  ctx.drawImage(img, 250, 10, 100, 100); // 图片加载完再画
+  // ① 原尺寸
+  ctx.drawImage(img, 0, 0);
+
+  // ② 缩放到 100x100，放到画布 (250, 10) 处
+  ctx.drawImage(img, 250, 10, 100, 100);
+
+  // ③ 从图片 (50, 50) 处裁剪 100x100 的区域，画到画布 (0, 0)，放大成 200x200
+  ctx.drawImage(img, 50, 50, 100, 100, 0, 0, 200, 200);
 };
 ```
 
-### 5.2 裁剪图片
-
-```js
-// ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
-// 作用：把图片的一部分裁剪出来，画到画布的指定位置和大小
-// 参数说明：
-//   img —— 图片对象（Image、Canvas、Video等）
-//   sx, sy —— 裁剪区域的左上角坐标（在图片上的位置）
-//   sw, sh —— 裁剪区域的宽高（在图片上截多大）
-//   dx, dy —— 画到画布上的左上角坐标
-//   dw, dh —— 在画布上绘制的宽高（可以缩放）
-//
-// 举例：只画图片的中间 100x100 区域，放到画布(50,50)位置，缩放成 200x200
-// ctx.drawImage(img, 50, 50, 100, 100, 50, 50, 200, 200);
-//
-// 注意：
-// - sw/sh/dw/dh 不能为负数，否则不会绘制
-// - 如果裁剪区域超出图片本身，会自动截取图片内的部分
-// - 也可以用 ctx.drawImage(img, dx, dy) 或 ctx.drawImage(img, dx, dy, dw, dh) 只指定目标区域，不裁剪
-```
+> **小结：**
+>
+> - 只需放图 → 用 3 参数或 5 参数
+> - 需要截取图片的一部分 → 用 9 参数
+> - `sw/sh/dw/dh` 必须为正数，否则不绘制
+> - 裁剪区域超出图片边界时，超出部分自动忽略（不会报错）
 
 ### 5.3 操作像素
 
