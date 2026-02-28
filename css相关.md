@@ -228,6 +228,8 @@ CSS 选择器类型丰富，优先级由选择器类型和数量决定。
   - rotateX(deg)：绕 X 轴旋转
   - rotateY(deg)：绕 Y 轴旋转
   - rotateZ(deg)：绕 Z 轴旋转
+  - skewX(deg)：沿 X 轴倾斜
+  - skewY(deg)：沿 Y 轴倾斜
   - translateX(px)：沿 X 轴平移
   - translateY(px)：沿 Y 轴平移
   - translateZ(px)：沿 Z 轴平移（需开启 3D 环境）
