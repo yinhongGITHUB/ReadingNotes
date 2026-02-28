@@ -29,34 +29,6 @@ class Child extends Parent {
 
 总结：super 用于访问和调用父类的构造函数和方法，是 ES6 类继承的关键。
 
-#### 一些关于类型的判断
-
-```js
-enum activeNameEnum {
-store_key = 'store_label',
-business_key = 'business_label',
-}
-
-// keyof typeof activeNameEnum 的类型是 "store_key" | "business_key"
-type TabKeys = keyof typeof activeNameEnum;
-
-// 用法示例
-let tab: TabKeys;
-tab = "store_key"; // 合法
-tab = "business_key"; // 合法
-// tab = "store_label"; // 不合法，类型检查会报错
-
-let a: typeof activeNameEnum;
-// a = activeNameEnum; // 合法
-// a = activeNameEnum.store_label; // 不合法
-
-let b: activeNameEnum;
-// b = activeNameEnum.store_label; // 合法
-// b = 'store_label'; // 合法
-// b = activeNameEnum; // 不合法
-
-```
-
 #### ts 索引签名的三种类型
 
 ```js
