@@ -135,13 +135,13 @@ class Dog implements Animal {
 #### 构造器签名
 
 ```js
-//ClockConstructor：约束构造函数本身的类型，即"接受 hour、minute 两个 number 参数，new 出来的实例必须是 ClockInterface 类型"
-//ClockInterface：约束实例必须有 tick() 方法
+// ClockConstructor：约束构造函数本身的类型，即"接受 hour、minute 两个 number 参数，new 出来的实例必须是 ClockInterface 类型"
+// ClockInterface：约束实例必须有 tick() 方法
 interface ClockConstructor {
-new (hour: number, minute: number): ClockInterface;
+  new (hour: number, minute: number): ClockInterface;
 }
 interface ClockInterface {
-tick();
+  tick();
 }
 ```
 
