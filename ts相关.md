@@ -201,7 +201,7 @@ alert(employee.fullName);
 
 注意：
 
-1. 只带有 get 不带有 set 的存取器自动被推断为 readonly
+1. 只带有 get 不带有 set 的存取器，对外部来说自动被推断为 readonly，当然在当前类里面还是可以 this._fullName = xxx 来修改的
 2. 存取器（getter/setter）本质上是类的内部方法，可以直接访问和更改 private 变量
 
 #### 三种 ts 类的成员变量类型介绍
