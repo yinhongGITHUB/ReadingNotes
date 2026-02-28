@@ -288,6 +288,40 @@ JWT（JSON Web Token）是一种用于安全传递信息的开放标准（RFC 75
 
 - 缺点：token 过期前无法主动失效，敏感信息需加密处理。
 
+##### 如何让 JWT 无感续期（自动续期方案）
+
+无感续期流程：
+
+1. 登录时，后端返回短期 Access Token 和长期 Refresh Token。
+2. Access Token 过期时，前端自动用 Refresh Token 换新 Token 并重试原请求。
+3. Refresh Token 也过期则跳转登录。
+
+代码示例：
+
+```js
+// axios 响应拦截器
+axios.interceptors.response.use(null, async (error) => {
+  if (error.response.status === 401) {
+    // 尝试用 refresh token 换新 token
+    const newToken = await refreshToken();
+    if (newToken) {
+      // 更新 token 并重试原请求
+      setToken(newToken);
+      error.config.headers["Authorization"] = "Bearer " + newToken;
+      return axios(error.config);
+    } else {
+      // refresh token 也失效，跳转登录
+      redirectToLogin();
+    }
+  }
+  return Promise.reject(error);
+});
+```
+
+这样用户在 Access Token 过期时，前端自动续期并重试请求，用户体验无感知。
+
+---
+
 ##### jwt 前两部分 header 和 payload
 
 JWT 的前两部分（Header 和 Payload）其实不是“加密”，而是“编码”——通常用 Base64Url 编码。前端拿到 JWT 后，可以直接用 Base64 解码得到明文内容，无需密钥。

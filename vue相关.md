@@ -940,6 +940,12 @@ const state = reactive({ user: { name: "", info: { age: 0 } } });
 
 ref 单层解构，拿到的是 ref 下面的 value，所以还是响应式的
 
+- 具体原理：
+
+state.value 是 ref 的响应式对象，user 是 state.value 里的对象属性。
+当你访问 state.value.user 时，Vue 会判断 user 是否已经被代理（响应式），如果没有，就用 Proxy 再包一层，让 user 也变成响应式对象。
+所以第一层（user）依然是 Proxy，具备响应式能力。
+
 ```js
 const state = ref({ user: { name: "张三" } });
 
