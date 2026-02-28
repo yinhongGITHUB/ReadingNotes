@@ -201,7 +201,7 @@ alert(employee.fullName);
 
 注意：
 
-1. 只带有 get 不带有 set 的存取器，对外部来说自动被推断为 readonly，当然在当前类里面还是可以 this._fullName = xxx 来修改的
+1. 只带有 get 不带有 set 的存取器，对外部来说自动被推断为 readonly，当然在当前类里面还是可以 this.\_fullName = xxx 来修改的
 2. 存取器（getter/setter）本质上是类的内部方法，可以直接访问和更改 private 变量
 
 #### 三种 ts 类的成员变量类型介绍
@@ -374,6 +374,12 @@ let a:Direction
 
 - `interface` 可以通过 `extends` 继承其他接口，也可以被类 `implements` 实现。
 - `type` 也可以通过交叉类型（`&`）扩展，但不能被类 `implements`。
+
+```js
+type A = { a: number };
+type B = { b?: string };
+type AB = A & B;
+```
 
 ##### 4. 表达能力
 
