@@ -134,13 +134,30 @@ class Dog implements Animal {
 
 #### 构造器签名
 
+```js
+//ClockConstructor：约束构造函数本身的类型，即"接受 hour、minute 两个 number 参数，new 出来的实例必须是 ClockInterface 类型"
+//ClockInterface：约束实例必须有 tick() 方法
 interface ClockConstructor {
 new (hour: number, minute: number): ClockInterface;
 }
 interface ClockInterface {
 tick();
 }
-构造函数实例化之后，的实例对象必须是 ClockInterface 类型
+```
+
+#### 工厂函数
+
+工厂函数就是一个专门用来创建并返回对象/实例的函数，把"如何创建对象"的细节封装起来。
+
+```js
+// 最简单的工厂函数
+function createUser(name, age) {
+  return { name, age };
+}
+
+const user = createUser("张三", 18);
+// { name: '张三', age: 18 }
+```
 
 #### never 类型
 
