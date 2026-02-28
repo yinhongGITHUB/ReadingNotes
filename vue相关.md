@@ -936,29 +936,77 @@ const state = reactive({ user: { name: "", info: { age: 0 } } });
 需要直接用对象属性访问，不想每次都 .value
 数据结构稳定、不会频繁传递/解构，用 reactive 代码更简洁
 
-#### 单层解构，ref 和 reactive
+#### ref 和 reactive 解构后是否响应式，取决于取出的值的类型
 
-ref 单层解构，拿到的是 ref 下面的 value，所以还是响应式的
+**核心规则：不论 ref 还是 reactive，不论解构多少层，取出的值是对象就响应式，是基本类型就失去响应式。和解构层数无关。**
 
 - 具体原理：
 
 state.value 是 ref 的响应式对象，user 是 state.value 里的对象属性。
 当你访问 state.value.user 时，Vue 会判断 user 是否已经被代理（响应式），如果没有，就用 Proxy 再包一层，让 user 也变成响应式对象。
-所以第一层（user）依然是 Proxy，具备响应式能力。
+所以 user 依然是 Proxy，具备响应式能力。
 
 ```js
 const state = ref({ user: { name: "张三" } });
 
-// 第一层解构
-const user = state.value.user; // user 是响应式的（因为 Proxy 懒代理）
+// 取出的是对象 → 响应式 ✅
+const user = state.value.user;
 
-// 第二层解构
-const { name } = state.value.user; // name 是普通字符串，不再响应式
+// 取出的是基本类型（字符串）→ 失去响应式 ❌
+const { name } = state.value.user;
 ```
 
 reactive 单层解构出来的是“值”，脱离了 Proxy，失去响应式。
 
-**注意：**从第二层解构开始，ref 拿到的也是**值**，也失去了响应式
+**注意：**响应式与否和解构层数无关，只看取出来的值是对象还是基本类型。如果一直是对象套对象，不管解构多少层都是响应式；只要取到基本类型（string/number/boolean 等），就失去响应式。
+
+#### 那一个属性解构失去响应式了 怎么才能让他重新恢复响应式
+
+使用 `toRef` 或 `toRefs`，让解构出来的基本类型属性重新和原响应式对象保持关联。
+
+##### toRef（单个属性）
+
+将 reactive 对象的某一个属性转成 ref，和原对象保持双向同步：
+
+```js
+const state = reactive({ name: "张三", age: 18 });
+
+// 直接解构 → 失去响应式 ❌
+const { name } = state;
+
+// 用 toRef → 恢复响应式 ✅
+const name = toRef(state, "name");
+// name.value === state.name，修改任意一个，另一个同步变化
+```
+
+##### toRefs（全部属性）
+
+将 reactive 对象的所有属性都转成 ref，适合整体解构：
+
+```js
+const state = reactive({ name: "张三", age: 18 });
+
+// 用 toRefs 解构 → 每个属性都是 ref，保持响应式 ✅
+const { name, age } = toRefs(state);
+// name.value === state.name，age.value === state.age
+
+// 常用于组合式函数（composables）的返回值
+function useUser() {
+  const state = reactive({ name: "张三", age: 18 });
+  return toRefs(state); // 解构后依然响应式
+}
+const { name, age } = useUser();
+```
+
+##### 对比总结
+
+| 方式                  | 适用场景         | 特点                     |
+| --------------------- | ---------------- | ------------------------ |
+| `toRef(state, 'key')` | 只需要某一个属性 | 和原对象双向绑定         |
+| `toRefs(state)`       | 需要整体解构     | 所有属性都转为 ref       |
+| `ref(state.name)`     | 只需要当前值快照 | 和原对象**断开**，不同步 |
+
+> `ref(state.name)` 只是拷贝了当前值，不会和原 state 同步，不能用来"恢复"响应式，只是创建了一个新的独立 ref。
 
 #### ref 性能 为什么比 reactive 好
 
