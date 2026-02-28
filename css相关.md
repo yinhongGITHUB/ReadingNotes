@@ -14,8 +14,8 @@ pageX：鼠标相对于整个文档左上角的 X 坐标（包含滚动距离）
 pageY：鼠标相对于整个文档左上角的 Y 坐标
 screenX：鼠标相对于屏幕左上角的 X 坐标
 screenY：鼠标相对于屏幕左上角的 Y 坐标
-offsetX：鼠标相对于事件源元素左上角的 X 坐标
-offsetY：鼠标相对于事件源元素左上角的 Y 坐标
+offsetX：鼠标相对于事件源元素（就是当前触发的这个 DOM 元素）左上角的 X 坐标
+offsetY：鼠标相对于事件源元素（就是当前触发的这个 DOM 元素）左上角的 Y 坐标
 滚动相关属性（DOM 元素或 document）
 scrollTop：元素已滚动的垂直距离（像素）
 scrollLeft：元素已滚动的水平距离（像素）
