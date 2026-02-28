@@ -765,9 +765,54 @@ body {
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 ```
 
+#### 浮动（float）
+
+浮动是 CSS 中用于让元素脱离常规文档流，向左或向右排列的布局方式。常用于实现文字环绕图片、横向排列等效果。
+
+**常见取值：**
+
+- float: left; 元素向左浮动
+- float: right; 元素向右浮动
+- float: none; 默认值，不浮动
+
+**浮动特点：**
+
+1. 浮动元素**脱离常规文档流**，**但仍处于文本流中**，后面的文本和内联元素会环绕在浮动元素周围。
+2. 浮动元素不会覆盖块级盒子，但可能导致父元素高度塌陷。
+3. 浮动元素的父容器如果没有 BFC，可能无法包裹住浮动子元素。
+
+**常见用途：**
+
+- 图片文字环绕
+- 多列横向布局
+- 经典圣杯/双飞翼布局
+
+**清除浮动：**
+为了解决父元素高度塌陷问题，常在**父元素**上用 clear: both; 或 BFC 技术（如 overflow: hidden）清除浮动。
+
+```css
+.父元素的类::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+```
+
+---
+
 #### bfc 可以清除浮动、防止 margin 塌陷、更好的控制布局
 
 注意：浮动只脱离了文档流，没有脱离文本流，文本还是会给浮动元素腾位置的
+
+#### 什么可以形成 bfc
+
+1. 根元素（html）
+2. 浮动元素（float 不为 none）
+3. 绝对定位元素（position 为 absolute 或 fixed）
+4. display 为 inline-block、table-cell、table-caption、flex、inline-flex、grid、inline-grid 的元素
+5. overflow 不为 visible（如 hidden、auto、scroll）
+6. fieldset 元素
+7. 多列布局元素（column-count > 1 或 column-width 设置）
 
 #### flex 的三个参数
 
