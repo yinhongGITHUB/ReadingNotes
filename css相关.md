@@ -23,8 +23,16 @@ scrollHeight：元素内容的总高度（包括未显示部分）
 scrollWidth：元素内容的总宽度（包括未显示部分）
 clientHeight：元素可视区域的高度（不含滚动条）
 clientWidth：元素可视区域的宽度（不含滚动条）
-offsetHeight：元素的高度（包括内边距和边框）
-offsetWidth：元素的宽度（包括内边距和边框）
+
+- offsetHeight 是 DOM 属性，返回元素的实际可见高度（内容+padding+border，单位像素，取整）。
+- height 是 CSS 样式属性，只包含内容区高度（不含 padding、border、margin）。
+- 区别：offsetHeight = height + padding + border，常用于获取元素真实显示高度。
+  offsetWidth：元素的宽度（包括内边距和边框）
+
+#### box-sizing
+
+- content-box：实际渲染宽度 = width + padding + border
+- border-box：实际渲染宽度 = width（padding 和 border 都包含在 width 内）
 
 #### css 环境变量
 
