@@ -419,3 +419,41 @@ WeakSet 适合存储对象引用、临时集合，防止内存泄漏。
   }
   factorial(5); // 120
   ```
+
+#### 如何防止尾递归 内存溢出
+
+1. 转为迭代的方式，就是将递归逻辑改写为循环结构（for (let i = 2; i <= n; i++)）
+2. 手动实现尾递归优化（Trampoline 模式）
+   通过 ** 蹦床函数（Trampoline）** 将递归转换为循环执行，每次递归调用返回一个函数而非直接执行
+
+```js
+// 原始尾递归函数（未优化）
+function sum(n, acc = 0) {
+  if (n <= 0) return acc;
+  return sum(n - 1, acc + n); // 普通递归调用
+}
+
+// 优化：返回待执行的函数而非直接递归
+function sum(n, acc = 0) {
+  if (n <= 0) return acc;
+  return () => sum(n - 1, acc + n); // 返回函数
+}
+
+// 蹦床函数：循环执行返回的函数直到得到结果
+// 蹦床函数（trampoline）可以优化递归、避免栈溢出，是因为它把递归调用“变成了循环”
+function trampoline(fn) {
+  return function (...args) {
+    let result = fn(...args);
+    while (typeof result === "function") {
+      result = result();
+    }
+    return result;
+  };
+}
+
+// 使用蹦床函数包装原始函数
+const safeSum = trampoline(sum);
+console.log(safeSum(100000)); // 不会栈溢出
+```
+
+3. 使用生成器,每次都得 next 一下，避免一次调用很多次
