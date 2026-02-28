@@ -31,7 +31,7 @@ clientWidth：元素可视区域的宽度（不含滚动条）
 
 #### box-sizing
 
-- content-box：实际渲染宽度 = width + padding + border
+- content-box（默认）：实际渲染宽度 = width + padding + border
 - border-box：实际渲染宽度 = width（padding 和 border 都包含在 width 内）
 
 #### css 环境变量
