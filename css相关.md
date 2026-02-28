@@ -831,3 +831,48 @@ body {
 当父容器空间不足时，B 收缩的宽度是 A 的 2 倍。
 
 3. flex-basis：定义了在分配剩余空间之前，弹性项目的基础大小。它可以设置为具体的长度值（如 px, em 等），也可以是百分比或者关键字 auto。auto 表示使用元素的默认尺寸或由内容决定的尺寸。
+
+#### 栅栏布局（Holy Grail Layout，Grid 实现）
+
+栅栏布局（Holy Grail Layout）是经典的三栏网页布局模式，常见结构为：左侧栏（导航）、中间主内容、右侧栏（广告/辅助信息），三栏宽度可自适应。
+
+**Grid 实现方式（推荐，现代浏览器）：**
+
+```css
+.container {
+  display: grid;
+  /* 把网格容器分成三列，左右固定，中间自适应 */
+  /* 假如一行实际由五个元素，前三个元素分别占据第一行的三列，第四、第五个元素会自动换到第二行，分别占据第二行的第一、第二列。如果还有更多元素，会继续按行填充 */
+  grid-template-columns: 200px 1fr 200px;
+  /* 把网格容器分成两行，第一行高度 80px，第二行高度 200px。如果有第三行及以上，默认高度是 auto（由内容撑开） */
+  grid-template-rows: 80px 200px;
+  /* 行间距 和 列间距 */
+  gap: 10px;
+}
+.left {
+  grid-column: 1;
+}
+.center {
+  grid-column: 2;
+}
+.right {
+  /* 设置当前元素在第几行第几列 */
+  grid-column: 3;
+  grid-row: 2;
+}
+```
+
+**HTML 结构：**
+
+```html
+<div class="container">
+  <div class="left">左侧栏</div>
+  <div class="center">中间内容</div>
+  <div class="right">右侧栏</div>
+</div>
+```
+
+**说明：**
+
+- grid-template-columns 设置三栏宽度，左右固定，中间自适应。
+- 结构简单，易于维护，推荐使用。
