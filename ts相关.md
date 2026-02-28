@@ -459,7 +459,7 @@ class Student extends Person {
 // 判断类型是否为 string
 type IsString<T> = T extends string ? true : false;
 type A = IsString<"abc">; // true
-type B = IsString<123>; // false
+type B = IsString<123>; // false 表示“只能是布尔值中的 false”。
 
 // infer 结合 extends 做类型提取
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
