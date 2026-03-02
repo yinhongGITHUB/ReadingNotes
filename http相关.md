@@ -372,7 +372,7 @@ const decodedPayload = JSON.parse(atob(payload));
 
 #### Cookie、Session、token
 
-1. Cookie
+1. Cookie（Cookie: key=value; Expires=Wed, 10 Mar 2027 12:00:00 GMT;sign=hash(key+secret)）
    浏览器和服务器之间自动携带的小型文本数据，常用于保存登录状态、用户偏好等。每次请求自动带上，前端可通过 document.cookie 访问。
    单个 Cookie 最大 4KB，单域名最多约 20 个 Cookie，总大小约 4KB × 20。
    安全性依赖于 HttpOnly（防止 JS 读取）、SameSite（防止 CSRF）、Secure（仅 HTTPS 传输）等属性。
@@ -386,13 +386,19 @@ const decodedPayload = JSON.parse(atob(payload));
 // SameSite=Strict：只有同源请求才会带 Cookie，任何跨站请求（无论 GET、POST、iframe、图片等）都不会带 Cookie。安全性最高，但可能影响部分跨站登录、分享等功能
 ```
 
-2. Session
+##### 后端校验 Cookie 过程
+
+1. 后端生成 Cookie 时，用 hash(key+secret) 算出一个签名 sign，一起下发给前端。
+2. 前端每次带回 key 和 sign，后端收到后用同样的 secret 重新计算 hash(key+secret)，和 sign 比较。
+3. 一致说明没被改，不一致说明被篡改。
+
+4. Session（ Cookie: sessionid=abc123）**只是一个 id，后端拿 id 去找数据，找得到就返回，找不到说明没权限**
    服务端保存的用户会话数据，通常用来记录用户登录状态、购物车等。浏览器通过 Cookie（如 sessionid）传递 Session 标识，服务端根据标识查找对应数据。
    Session 数据存储在服务端，前端只保存标识，安全性较高。
    Session 依赖 Cookie 传递标识，Cookie 丢失则会话失效。
    适合传统网站，分布式场景需考虑 Session 共享或持久化。
 
-3. Token
+5. Token
    令牌，常用于前后端分离项目的身份认证（如 JWT）。登录后服务器生成 token，前端保存（如 localStorage、sessionStorage），每次请求通过请求头（如 Authorization）主动携带。
    Token 通常自包含用户信息，支持无状态认证，灵活性高。
    Token 长度一般 200~500 字节，远小于 Cookie 总容量限制。
