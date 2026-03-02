@@ -1139,7 +1139,7 @@ export default {
       "/api": {
         target: "http://backend.server.com",
         changeOrigin: true, // 在代理请求时，将请求头中的 Origin 和 Host 设置为目标地址（target），而不是原始请求地址。
-        rewrite: (path) => path.replace(/^\/api/, ""), // 可选，重写路径
+        rewrite: (path) => path.replace(/^\/api/, ""), // 可选，重写路径（/api/user → /user）
       },
     },
   },
