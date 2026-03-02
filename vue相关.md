@@ -1129,3 +1129,19 @@ watchEffect((onCleanup) => {
    数据变了再跑 getter 得 newValue，调用回调（new, old），更新 old。支持 deep、immediate、flush、数组源。
 
 **区别：**watchEffect 自动收集、无 oldValue；watch 需指定源，可拿 old/new，控制更精细。
+
+#### vite 的本地代理 server.proxy
+
+```js
+export default {
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://backend.server.com",
+        changeOrigin: true, // 在代理请求时，将请求头中的 Origin 和 Host 设置为目标地址（target），而不是原始请求地址。
+        rewrite: (path) => path.replace(/^\/api/, ""), // 可选，重写路径
+      },
+    },
+  },
+};
+```
