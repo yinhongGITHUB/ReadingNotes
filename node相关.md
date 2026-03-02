@@ -89,7 +89,7 @@ const app = express();
 app.use(
   cors({
     origin: ["http://localhost:3000", "https://your-domain.com"],
-    credentials: true,
+    credentials: true, // 让跨域请求可以带 cookie，但响应头 Access-Control-Allow-Origin 不能写成 *，必须写成前端真实请求的域名，也就是说前端要传origin请求头，后端才能根据这个请求头返回对应的 Access-Control-Allow-Origin
   })
 );
 ```
