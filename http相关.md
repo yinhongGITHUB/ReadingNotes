@@ -398,3 +398,9 @@ const decodedPayload = JSON.parse(atob(payload));
    Token 长度一般 200~500 字节，远小于 Cookie 总容量限制。
    Token 不会自动携带，需前端主动添加到请求头，安全性更高。
    适合移动端、API、分布式系统，但需注意过期和失效机制。
+
+#### Origin、Referer、Host 的区别
+
+1. Origin：只包含协议、域名、端口（如 http://localhost:3000）
+2. Referer：包含完整的来源页面 URL（如 http://localhost:3000/page?a=1）。
+3. Host：只包含主机名和端口（如 localhost:3000）。
