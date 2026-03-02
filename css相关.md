@@ -170,6 +170,25 @@ CSS 选择器类型丰富，优先级由选择器类型和数量决定。
 浏览器默认样式优先级最低，任何自定义样式都能覆盖。
 优先级高的样式覆盖低优先级，!important 最高但应谨慎使用。
 
+#### 属性选择器介绍
+
+```js
+[attr] 选中有 attr 属性的元素
+  例如：[disabled] 选中所有有 disabled 属性的元素
+
+[attr=value] 选中属性值等于 value 的元素
+  例如：[type="text"] 选中所有 type 为 text 的 input 元素
+
+[attr^=value] 选中属性值以 value 开头的元素
+  例如：[href^="https"] 选中所有 href 以 https 开头的 a 元素
+
+[attr$=value] 选中属性值以 value 结尾的元素
+  例如：[src$=".jpg"] 选中所有 src 以 .jpg 结尾的 img 元素
+
+[attr*=value] 选中属性值包含 value 的元素
+  例如：[class*="active"] 选中所有 class 属性中包含 active 的元素
+```
+
 #### CSS 动画属性详解
 
 **一、transition 相关属性**
