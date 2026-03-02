@@ -388,7 +388,7 @@ const decodedPayload = JSON.parse(atob(payload));
 
 ##### 后端校验 Cookie 过程
 
-1. 后端生成 Cookie 时，用 hash(key+secret) 算出一个签名 sign，一起下发给前端。
+1. 后端发给前端，Cookie: key=value; Expires=Wed, 10 Mar 2027 12:00:00 GMT;sign=hash(key+secret)，其中 sign 是 key 和后端 secret 通过 hash 算法生成的签名。**secret 一直保存在后端**
 2. 前端每次带回 key 和 sign，后端收到后用同样的 secret 重新计算 hash(key+secret)，和 sign 比较。
 3. 一致说明没被改，不一致说明被篡改。
 
