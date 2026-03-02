@@ -782,6 +782,18 @@ Vue3 生命周期执行顺序（含 setup）：
 - beforeMount 可以拿到 this.$el，但还没有插入到页面
 - mounted 可以拿到 this.$el，并且已经插入到页面，可以安全的访问**DOM**元素了（this.$el 是 Vue 组件实例的根 DOM 元素的引用）
 
+##### 怎么理解 this.$el 是 Vue 组件实例的根 DOM 元素的引用
+
+```js
+<template>
+  <div class="box">
+    <span>内容</span>
+    <button>按钮</button>
+  </div>
+</template>
+// this.$el 就是<div class="box">
+```
+
 #### Vue 3 的生命周期
 
 setup 不能用 this
@@ -1113,7 +1125,7 @@ watchEffect((onCleanup) => {
 1. watchEffect：
    把传入函数直接当 effect 跑，自动收集它内部用到的响应式数据，数据变了就重跑。支持 onCleanup。
 2. watch：
-   先把 source 变成 getter（source就是第一个参数，函数或读取 ref/reactive，即 getter = () => count.value）。初始化跑一次 getter 收集依赖并取 oldValue；
+   先把 source 变成 getter（source 就是第一个参数，函数或读取 ref/reactive，即 getter = () => count.value）。初始化跑一次 getter 收集依赖并取 oldValue；
    数据变了再跑 getter 得 newValue，调用回调（new, old），更新 old。支持 deep、immediate、flush、数组源。
 
 **区别：**watchEffect 自动收集、无 oldValue；watch 需指定源，可拿 old/new，控制更精细。
