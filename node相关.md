@@ -56,6 +56,24 @@ process.nextTick()：下一个事件循环执行函数
 process.stdin / process.stdout / process.stderr：标准输入/输出/错误流
 process.on(event, callback)：监听进程事件（如 'exit', 'uncaughtException'）
 
+#### process.argv
+
+```js
+node wx-build.mjs --NODE_ENV pre --dev --MODE_ENV DEV --minify 执行命令是这样的前提下，process.argv 值是多少
+
+[
+  'C:\\Program Files\\nodejs\\node.exe', // 0: node 可执行文件路径
+  'D:\\project\\table_web_wxadmin\\wx-build.mjs', // 1: 脚本文件路径
+  '--NODE_ENV', // 2
+  'pre',        // 3
+  '--dev',      // 4
+  '--MODE_ENV', // 5
+  'DEV',        // 6
+  '--minify'    // 7
+]
+一般用process.argv.slice(2) 截取部分，然后用includes() 或者其他方式解析参数
+```
+
 #### node.js 如何处理跨域
 
 最常见有两种方案：
