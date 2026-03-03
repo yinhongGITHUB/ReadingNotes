@@ -169,6 +169,12 @@ console.log(proxyObj.info.address.city); // 西安
 track/trigger 就相当于是具体的执行函数，都是按照（WeakMap -> Map -> Set）去存去找
 track/trigger 是 get/set 的配套：get 期间收集依赖（track），set 期间触发依赖（trigger）。没有 get 时的 track，就不会有 set 时的触发；有 set 但无已收集的依赖，就不会触发任何副作用。
 
+#### 为什么 ref 要设计成 script 里面要用 .value 的形式, template 里面设计成不需要 .value 的形式
+
+1. 首先 proxy 只能代理对象
+2. template 里面设计成不需要 .value 的形式：是 vue 编译的时候会自动加上 .value 为了简单易懂。
+3. script 里面要用 .value 的形式：ref 设计之初是为了基本数据类型，proxy 无法代理基本数据类型，所以要用一个对象包裹，才能触发代理
+
 #### Composition Api 与 Options Api 进行两大方面的比较
 
 1. 逻辑组织：
