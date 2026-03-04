@@ -57,6 +57,9 @@ obj[1]其实会去拿obj["1"],也就是说，输入obj[1]和obj["1"]拿到的值
 
 #### 抽象类和抽象方法
 
+- 抽象类的特点：不能直接 new Shape()，会报错：Cannot create an instance of an abstract class
+- 抽象方法的特点：没有方法体，必须由子类实现，否则子类也必须声明为 abstract。
+
 ```js
 abstract class Shape {
   abstract getArea(): number; // 抽象方法，必须由子类实现
@@ -67,7 +70,7 @@ abstract class Shape {
   }
 }
 
-// 不能直接 new Shape()，会报错：Cannot create an instance of an abstract class
+
 
 // 子类继承抽象类，必须实现所有抽象方法
 class Circle extends Shape {
