@@ -25,7 +25,6 @@
 2. **双端指针（Head/Tail）**  
    维护旧列表和新列表的头尾指针，快速命中常见的头/尾插入、删除、移动场景。  
    主要场景：
-
    - 旧头 == 新头
    - 旧尾 == 新尾
    - 旧头 == 新尾（节点移到尾部）
@@ -255,7 +254,6 @@ Vue3 的响应式系统核心是通过 ES6 的 Proxy 实现的。Proxy 可以拦
 **核心原理**：
 
 1. **数据代理**：
-
    - Vue3 使用 `Proxy` 包裹响应式对象（如 reactive、ref），拦截对对象属性的读取和设置。
    - 当读取属性时（get），进行依赖收集；当设置属性时（set），触发依赖更新。
 
@@ -515,29 +513,24 @@ defineProps({
 **核心配置属性**：
 
 1. **data-key**（必需）：
-
    - 类型：String
    - 每个数据项的唯一标识字段名（如 'id'）
    - 用于追踪每个列表项
 
 2. **data-sources**（必需）：
-
    - 类型：Array
    - 列表数据源
 
 3. **data-component**（必需）：
-
    - 类型：Component
    - 渲染每个列表项的组件
 
 4. **estimate-size**：
-
    - 类型：Number
    - 每个列表项的预估高度（单位：px）
    - 固定高度时设置准确值，动态高度时设置平均值
 
 5. **keeps**：
-
    - 类型：Number
    - 默认值：30
    - 可视区域保持渲染的项数量（缓冲区大小）
@@ -1085,7 +1078,7 @@ watch(
   [() => foo.value, () => bar.value],
   ([newFoo, newBar], [oldFoo, oldBar]) => {
     // newFoo、newBar 是最新值，oldFoo、oldBar 是旧值
-  }
+  },
 );
 ```
 
@@ -1136,6 +1129,18 @@ watchEffect((onCleanup) => {
    数据变了再跑 getter 得 newValue，调用回调（new, old），更新 old。支持 deep、immediate、flush、数组源。
 
 **区别：**watchEffect 自动收集、无 oldValue；watch 需指定源，可拿 old/new，控制更精细。
+
+##### watchEffect 和 watch 怎么中断监听
+
+watch 和 watchEffect 都返回一个 stop 函数，调用 stop() 就能中断监听。
+
+```js
+const stop = watch(source, cb);
+stop(); // 停止监听
+
+const stopEffect = watchEffect(fn);
+stopEffect(); // 停止监听
+```
 
 #### vite 的本地代理 server.proxy
 
