@@ -1185,7 +1185,9 @@ let observer = new MutationObserver(() => {
   callbacks = [];
 });
 let textNode = document.createTextNode("");
-observer.observe(textNode, { characterData: true });
+observer.observe(textNode, {
+  characterData: true // 是否监听文本节点内容的变化
+});
 
 function nextTick(cb) {
   callbacks.push(cb);
