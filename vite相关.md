@@ -530,7 +530,7 @@ export default function myPlugin() {
 
 - 例："lodash"（发布 npm 包时将 lodash 一起打包）这样用户安装你的包时，不需要再单独安装 lodash，也不会因为 lodash 版本不一致导致出错
 
-#### vite 的 HMR 实现原理
+#### vite 的 HMR 实现原理（本地才有）
 
 HMR（热更新）：改了代码，页面不整体刷新，只把改动的那个模块悄悄换掉，页面状态还在。
 
