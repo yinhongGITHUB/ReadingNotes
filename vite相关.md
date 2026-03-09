@@ -501,3 +501,48 @@ export default function myPlugin() {
 ```
 
 详细钩子和参数可查阅官方文档：https://cn.vitejs.dev/guide/api-plugin.html
+
+#### package.json 常见依赖配置项
+
+1. **dependencies** 生产依赖，项目运行时必须的包。
+
+- 例："vue", "axios", "react"
+
+2. **devDependencies** 开发依赖，项目开发时需要的包，生产环境不需要。
+
+- 例："vite", "eslint", "typescript", "@vitejs/plugin-vue"
+
+3. **peerDependencies** 同伴依赖，库开发（例如自己开发了一个组件库）时声明的兼容版本，使用者需自行安装。
+
+- 例："vue"（如开发 vue 组件库时声明兼容的 vue 版本）
+
+```js
+"peerDependencies": {
+  "vue": "^3.0.0"
+}
+```
+
+4. **optionalDependencies** 可选依赖，安装失败不会报错。
+
+- 例："fsevents"（macOS 文件系统监听，非必需）
+
+5. **bundledDependencies** 打包依赖，发布 npm 包时会一起打包进包里。
+
+- 例："lodash"（发布 npm 包时将 lodash 一起打包）这样用户安装你的包时，不需要再单独安装 lodash，也不会因为 lodash 版本不一致导致出错
+
+#### vite 的 HMR 实现原理
+
+HMR（热更新）：改了代码，页面不整体刷新，只把改动的那个模块悄悄换掉，页面状态还在。
+
+**大致过程：**
+
+1. Vite 启动时，服务端和浏览器之间建了一条 WebSocket 长连接
+2. 你改了某个文件，服务端马上感知到（用 chokidar 监听文件）
+3. 服务端通过 WebSocket 告诉浏览器："xxx 模块变了"
+4. 浏览器收到消息，重新去请求这个模块（URL 带时间戳防缓存），把旧的换成新的，组件自动重新渲染
+
+**几个细节：**
+
+- 不会把所有模块都更新，只更新"受影响的最小范围"——沿着依赖链往上找，找到第一个写了 `import.meta.hot.accept()` 的模块就停（**具体的找法是冒泡一层一层往上找**），只换那部分
+- 改 CSS 不用做任何配置，Vite 直接把页面上的 `<style>` 换掉，无感刷新
+- webpack 热更新要重新打包整个 chunk，Vite 只需重新请求单个模块，所以快很多
