@@ -294,35 +294,53 @@ JWT（JSON Web Token）是一种用于安全传递信息的开放标准（RFC 75
 
 ##### 如何让 JWT 无感续期（自动续期方案）
 
-无感续期流程：
+登录时后端同时返回两个 token：
 
-1. 登录时，后端返回短期 Access Token 和长期 Refresh Token。
-2. Access Token 过期时，前端自动用 Refresh Token 换新 Token 并重试原请求。
-3. Refresh Token 也过期则跳转登录。
+- **Access Token**：短期有效（如 15 分钟），每次请求都带着它做鉴权，日常通信只用它。
+- **Refresh Token**：长期有效（如 7 天），平时不用，只在 Access Token 过期时拿来换一个新 Access Token，换完继续用新 Access Token，Refresh Token 自己不做鉴权。
 
-代码示例：
+流程：收到 401 → 用 Refresh Token 换新 Access Token → 用新 Access Token 重试原请求 → Refresh Token 也失效则跳转登录。
+
+**并发问题：** 如果同时有多个请求都 401 了，要防止重复换 token（Refresh Token 有些后端只让用一次），解决方案是加一个"正在刷新"的标志位，其他请求排队等新 token 下来再重试。
 
 ```js
-// axios 响应拦截器
+let isRefreshing = false; // 标志位：当前是否正在换 token（防止并发重复换）
+let pendingQueue = []; // 等候室：换 token 期间进来的其他 401 请求，先存回调，等新 token 下来再统一重试
+
 axios.interceptors.response.use(null, async (error) => {
   if (error.response.status === 401) {
-    // 尝试用 refresh token 换新 token
-    const newToken = await refreshToken();
+    if (isRefreshing) {
+      // 已有请求在换 token 了，当前请求不重复换，直接进等候室
+      // 返回一个 pending 状态的 Promise，等新 token 下来后由外部 resolve 它
+      return new Promise((resolve) => {
+        pendingQueue.push((newToken) => {
+          error.config.headers["Authorization"] = "Bearer " + newToken;
+          resolve(axios(error.config)); // 用新 token 重试本次请求
+        });
+      });
+    }
+
+    // 第一个 401 的请求负责去换 token
+    isRefreshing = true;
+    const newToken = await refreshToken(); // 携带 Refresh Token 请求后端，换一个新的 Access Token
+
     if (newToken) {
-      // 更新 token 并重试原请求
-      setToken(newToken);
+      setToken(newToken); // 把新 Access Token 存到本地（localStorage 等）
+      pendingQueue.forEach((cb) => cb(newToken)); // 通知等候室里所有请求，用新 token 重试
+      pendingQueue = []; // 清空等候室
+      isRefreshing = false; // 重置标志位，下次 401 可以重新触发换 token
       error.config.headers["Authorization"] = "Bearer " + newToken;
-      return axios(error.config);
+      return axios(error.config); // 用新 token 重试当前请求
     } else {
-      // refresh token 也失效，跳转登录
+      // Refresh Token 也过期了，无法续期，只能重新登录
+      isRefreshing = false;
+      pendingQueue = [];
       redirectToLogin();
     }
   }
   return Promise.reject(error);
 });
 ```
-
-这样用户在 Access Token 过期时，前端自动续期并重试请求，用户体验无感知。
 
 ---
 
